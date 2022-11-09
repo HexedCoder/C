@@ -8,6 +8,7 @@ struct tree {
     struct tree *parent;
     struct tree *left;
     struct tree *right;
+    struct tree *height;
     int data;
 };
 typedef struct tree tree;
@@ -21,6 +22,8 @@ void postorder(tree *root);
 void inorder(tree *root);
 
 void levelorder(tree *root);
+
+void avl_insert(tree *t, tree *i);
 
 tree *bst_insert(tree *root, tree *node);
 
