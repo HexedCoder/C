@@ -2,7 +2,7 @@
 #include <string.h>
 #include <malloc.h>
 #include <stdint-gcc.h>
-#include "tree.h"
+#include "avl.h"
 
 void print(void *data) {
 
