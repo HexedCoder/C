@@ -32,7 +32,6 @@ static void *get_min(node_t *node);
 
 static int get_t_size(node_t *node);
 
-
 tree *tree_create(compare compare_func, action action_func) {
     tree *tree = calloc(1, sizeof(*tree));
 
