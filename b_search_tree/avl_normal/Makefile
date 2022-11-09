@@ -25,7 +25,7 @@ run: $(BIN)
 check: $(CHECK)
 
 clean:
-	@rm -rf $(BIN) $(OBJS)
+	@rm -rf $(BIN) $(OBJS) gmon.out
 	clear
 
 profile: CFLAGS += -g3 -pg
