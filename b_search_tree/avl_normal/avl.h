@@ -31,6 +31,7 @@ int size(tree *);
 void print(tree *);
 
 tree *delete_node(tree **, int); // Regular BST deletion (not AVL)
+
 void delete(tree **);
 
 void preorder(tree *, void (*)(tree *));
