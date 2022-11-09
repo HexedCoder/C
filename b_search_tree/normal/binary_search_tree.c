@@ -128,19 +128,33 @@ void levelorder(tree *root) {
     llist_delete(queue, NULL);
 }
 
-tree *bst_minimum(tree *tree) {
+int bst_minimum(tree *tree) {
+    while (tree->left)
+        tree = tree->left;
+
+    return tree->data;
+}
+
+tree *bst_minimum_node(tree *tree) {
     while (tree->left)
         tree = tree->left;
 
     return tree;
 }
 
-tree *bst_maximum(tree *tree) {
+tree *bst_maximum_node(tree *tree) {
+    while (tree->right)
+        tree = tree->right;
+
+    return tree;
+}
+
+int bst_maximum(tree *tree) {
     while (tree->right) {
         tree = tree->right;
     }
 
-    return tree;
+    return tree->data;
 }
 
 int tree_size(tree *tree) {
@@ -164,59 +178,70 @@ void print(tree *root) {
 }
 
 tree *delete_node(tree **root, int val) {
+// Return parent of deleted node except:
+    //
+    // 1. if deleted node does not exist then return null
+    // 2. if deleted node is the root then return new root
     tree *node = search(*root, val);
-    if (!node) {
-        return NULL;
-    }
+    tree *tmp = 0;
+    if (node == 0) return *root;
 
-    // Handle root node
-    if (*root == node) {
-        if (!node->left && !node->right) {
-            free(*root);
-            *root = NULL;
+    // Root node.
+    //
+    // Treat special because root has no parent to relink.
+    //
+    // Only need special handling for:
+    //
+    // i. no children
+    // ii. one child
+    if (node->parent == 0) {
+        if (node->left == 0 && node->right == 0) {
+            free(node);
+            *root = 0;
             return *root;
         }
-        if (!node->left || !node->right) {
-            tree *temp = node->left ? node->left : node->right;
-            temp->parent = NULL;
-            free(*root);
-            *root = temp;
+        if (node->left == 0 || node->right == 0) {
+            tmp = (node->left == 0) ? node->right : node->left;
+            tmp->parent = 0;
+            free(node);
+            *root = tmp;
             return *root;
         }
     }
 
-    // Handle if inner node has no right for minimum
-    if (!node->right) {
-        if (node->parent->data < node->data) {
-            node->parent->right = node->left;
-        } else {
-            node->parent->left = node->left;
-        }
-        if (node->left) {
-            node->left->parent = node->parent;
-        }
-        free(node);
-        return *root;
+    // Replace deleted node with the minimum of its right branch.
+    //
+    // If missing the right branch then replace with the left branch, treating
+    // leaf nodes in the same manner.
+    //
+    // The minimum node cannot have a left child.
+    //
+    // But the minimum node can be the right child of the deleted node so replace
+    // deleted node's data with the minimum after testing if the minimum is its
+    // right child.
+    //
+    // NOTE: If a leaf or missing right branch, then saving the node and copying
+    // its data is extraneous but minimal work overall.
+    tree *x = node;
+    tmp = node->left;
+    if (node->right != 0) {
+        node = bst_minimum_node(node->right);
+        tmp = node->right;
     }
-
-    // Standard handling
-    tree *min = bst_minimum(node->right);
-    node->data ^= min->data;
-    min->data ^= node->data;
-    node->data ^= min->data;
-    if (min == node->right) {
-        node->right = min->right;
-        if (min->right) {
-            min->right->parent = node;
-        }
+    if (node->data > node->parent->data) {
+        // Right child.
+        node->parent->right = tmp;
     } else {
-        min->parent->left = min->right;
-        if (min->right) {
-            min->right->parent = min->parent;
-        }
+        // Left child.
+        node->parent->left = tmp;
     }
-    free(min);
-    return *root;
+    if (tmp != 0) {
+        tmp->parent = node->parent;
+    }
+    x->data = node->data;
+    tmp = node->parent;
+    free(node);
+    return tmp;
 }
 
 void tree_delete(tree **p_tree) {
@@ -229,3 +254,8 @@ void tree_delete(tree **p_tree) {
     free(*p_tree);
     *p_tree = NULL;
 }
+
+struct trunk {
+    struct trunk *prev;
+    const char *str;
+};

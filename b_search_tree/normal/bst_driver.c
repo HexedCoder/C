@@ -158,6 +158,59 @@ void signal_handler(int signal, siginfo_t *info, void *context) {
     exit(1);
 }
 
+struct trunk {
+    struct trunk *prev;
+    const char *str;
+};
+
+static void print_trunks(struct trunk *p) {
+    if (!p) {
+        return;
+    }
+    print_trunks(p->prev);
+    printf("%s", p->str);
+}
+
+static void print_recursive(tree *root, struct trunk *prev, int is_left) {
+    if (!root) {
+        return;
+    }
+
+    struct trunk this_disp = {prev, "     "};
+    const char *prev_str = this_disp.str;
+    print_recursive(root->right, &this_disp, 1);
+
+    if (!prev) {
+        this_disp.str = "---";
+    } else if (is_left) {
+        this_disp.str = ".--";
+        prev_str = "    |";
+    } else {
+        this_disp.str = "`--";
+        prev->str = prev_str;
+    }
+
+    print_trunks(&this_disp);
+    printf("%d\n", root->data); // whatever custom print you need
+
+    if (prev) {
+        prev->str = prev_str;
+    }
+    this_disp.str = "    |";
+
+    print_recursive(root->left, &this_disp, 0);
+    if (!prev) {
+        puts("");
+    }
+}
+
+void printvisual(tree *root) {
+    if (!root) {
+        return;
+    }
+    print_recursive(root, NULL, 0);
+}
+
 int main(void) {
     struct timeval t1;
     struct timeval t2;
@@ -215,6 +268,8 @@ int main(void) {
         bst_insert(bst, create_node(a[i]));
     }
 
+    printvisual(bst);
+
 #ifdef DEBUG
     print(bst);
 #endif
@@ -230,7 +285,7 @@ int main(void) {
 
     //Test.
     puts(section);
-    node = bst_minimum(bst);
+    node = bst_minimum_node(bst);
 
     //Verify node.
     verify_node(node, min);
@@ -243,7 +298,7 @@ int main(void) {
 
     //Test.
     puts(section);
-    node = bst_maximum(bst);
+    node = bst_maximum_node(bst);
 
     //Verify node.
     verify_node(node, max);
@@ -416,6 +471,9 @@ int main(void) {
 #endif
         }
     }
+
+    printvisual(bst);
+
 #ifdef DEBUG
     print(bst);
 #endif
@@ -423,7 +481,6 @@ int main(void) {
     //Verify size of tree.
     test_size(bst, sz);
     puts(footer);
-
 
     //New test.
     puts(header);
@@ -443,6 +500,9 @@ int main(void) {
 
     //Verify deletion.
     printf("Has node %d been deleted?\n", 30);
+
+    printvisual(bst);
+
     node = search(bst, 30);
     if (node == 0) {
         ++pass;

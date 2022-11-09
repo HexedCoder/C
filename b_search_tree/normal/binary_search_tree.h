@@ -26,9 +26,13 @@ tree *bst_insert(tree *root, tree *node);
 
 tree *search(tree *, int);
 
-tree *bst_minimum(tree *tree);
+int bst_minimum(tree *tree);
 
-tree *bst_maximum(tree *tree);
+tree *bst_minimum_node(tree *tree);
+
+tree *bst_maximum_node(tree *tree);
+
+int bst_maximum(tree *tree);
 
 int tree_size(tree *tree);
 
