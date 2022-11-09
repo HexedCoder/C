@@ -30,6 +30,9 @@ struct {
     int on_key;
     tree *on_node;
 } traversal_fail;
+
+void printvisual(tree *root);
+
 static const char *header =
         "\n-------------------------------------------------------------------------------";
 static const char *section =
@@ -66,7 +69,7 @@ void test_size(tree *t, int sz) {
         printf("\tFAIL! Size of tree = %d but should %d\n", size(t), sz);
 
 #ifdef DEBUG
-        print(l);
+        printvisual(t);
 #endif
     }
 }
@@ -143,7 +146,7 @@ void verify_node(tree *t, int v) {
         ++fail;
         printf("\tFAIL! Node = %d but should %d\n", t->data, v);
 #ifdef DEBUG
-        print(l);
+        printvisual(t);
 #endif
     }
 }
@@ -170,7 +173,7 @@ void verify_balance(tree *t) {
             ++fail;
             printf("\tFAIL! Tree is not balanced!\n");
 #ifdef DEBUG
-            print(l);
+            printvisual(t);
 #endif
             break;
         }
@@ -258,7 +261,7 @@ static void print_recursive(tree *root, struct trunk *prev, int is_left) {
     }
 
     print_trunks(&this_disp);
-    printf("%d\n", root->data); // whatever custom print you need
+    printf("%d\n", root->data); // whatever custom printvisual you need
 
     if (prev) {
         prev->str = prev_str;
@@ -304,7 +307,6 @@ int main(void) {
                     25, 29, 30, 38
             };
     int sz = 0;
-    tree *node = 0;
     int tree_size = 0;
 
     //New test.
@@ -343,9 +345,6 @@ int main(void) {
 
     printvisual(avl);
 
-#ifdef DEBUG
-    print(avl);
-#endif
     sz = sz + sizeof(a) / sizeof(int);
 
     //Verify size of tree.
@@ -366,10 +365,7 @@ int main(void) {
 
     //Test.
     puts(section);
-    node = rotate_right(&avl, search(avl, 8));
-#ifdef DEBUG
-    print(avl);
-#endif
+    rotate_right(&avl, search(avl, 8));
 
     //Verify BST property.
     printf("Is BST property preserved? (verifying with inorder traversal)\n");
@@ -386,10 +382,7 @@ int main(void) {
 
     //Test.
     puts(section);
-    node = rotate_left(&avl, search(avl, 5));
-#ifdef DEBUG
-    print(avl);
-#endif
+    rotate_left(&avl, search(avl, 5));
 
     //Verify BST property.
     printf("Is BST property preserved? (verifying with inorder traversal)\n");
@@ -397,7 +390,6 @@ int main(void) {
     tree_size = sizeof(inorder_sequence) / sizeof(int);
     test_traversal(avl, &inorder, &verify_traversal, tree_size);
     puts(footer);
-
 
     //New test.
     puts(header);
@@ -406,10 +398,7 @@ int main(void) {
 
     //Test.
     puts(section);
-    node = rotate_right(&avl, search(avl, 5));
-#ifdef DEBUG
-    print(avl);
-#endif
+    rotate_right(&avl, search(avl, 5));
 
     //Verify BST property.
     printf("Is BST property preserved? (verifying with inorder traversal)\n");
@@ -418,7 +407,6 @@ int main(void) {
     test_traversal(avl, &inorder, &verify_traversal, tree_size);
     puts(footer);
 
-
     //New test.
     puts(header);
     printf("Test #%d:\n", ++testcount);
@@ -426,9 +414,9 @@ int main(void) {
 
     //Test.
     puts(section);
-    node = rotate_left(&avl, search(avl, 6));
+    rotate_left(&avl, search(avl, 6));
 #ifdef DEBUG
-    print(avl);
+    printvisual(avl);
 #endif
 
     //Verify BST property.
@@ -446,9 +434,9 @@ int main(void) {
 
     //Test.
     puts(section);
-    node = rotate_right(&avl, search(avl, 3));
+    rotate_right(&avl, search(avl, 3));
 #ifdef DEBUG
-    print(avl);
+    printvisual(avl);
 #endif
 
     //Verify BST property.
@@ -466,9 +454,9 @@ int main(void) {
 
     //Test.
     puts(section);
-    node = rotate_left(&avl, search(avl, 10));
+    rotate_left(&avl, search(avl, 10));
 #ifdef DEBUG
-    print(avl);
+    printvisual(avl);
 #endif
 
     //Verify BST property.
@@ -486,9 +474,9 @@ int main(void) {
 
     //Test.
     puts(section);
-    node = rotate_right(&avl, search(avl, 13));
+    rotate_right(&avl, search(avl, 13));
 #ifdef DEBUG
-    print(avl);
+    printvisual(avl);
 #endif
 
     //Verify BST property.
@@ -506,9 +494,9 @@ int main(void) {
 
     //Test.
     puts(section);
-    node = rotate_left(&avl, search(avl, 14));
+    rotate_left(&avl, search(avl, 14));
 #ifdef DEBUG
-    print(avl);
+    printvisual(avl);
 #endif
 
     //Verify BST property.
@@ -531,7 +519,6 @@ int main(void) {
     test_size(avl, 0);
     puts(footer);
 
-
     //New test.
     puts(header);
     printf("Test #%d:\n", ++testcount);
@@ -550,7 +537,7 @@ int main(void) {
     avl_insert(avl, create_node(26));
     avl_insert(avl, create_node(15));
 #ifdef DEBUG
-    print(avl);
+    printvisual(avl);
 #endif
 
     //Verify tree is balanced.
@@ -562,7 +549,7 @@ int main(void) {
     printf("Insert node 13 creating AVL violation at node 9\n");
     avl_insert(avl, create_node(13));
 #ifdef DEBUG
-    print(avl);
+    printvisual(avl);
 #endif
 
     //Verify tree is balanced.
@@ -593,7 +580,7 @@ int main(void) {
         avl_insert(avl, create_node(a[i]));
     }
 #ifdef DEBUG
-    print(avl);
+    printvisual(avl);
 #endif
 
     printvisual(avl);

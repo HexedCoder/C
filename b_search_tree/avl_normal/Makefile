@@ -16,7 +16,7 @@ CC:= gcc
 all: $(BIN)
 	./$(BIN)
 
-debug: CFLAGS += -g3
+debug: CFLAGS += -g3 -DDEBUG
 debug: $(BIN)
 
 run: $(BIN)
