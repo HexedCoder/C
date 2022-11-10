@@ -339,9 +339,10 @@ static int delete_node(node_t **root, node_t **target,
 
         if (!node->left || !node->right) {
             node_t *temp = node->left ? node->left : node->right;
+            printf("Temp Node: %s\n", (char *) temp->data);
             temp->parent = NULL;
             free(*target);
-            *target = temp;
+            *root = temp;
             return 1;
         }
     }
@@ -460,7 +461,7 @@ static void print_recursive(node_t *root, struct trunk *prev, int is_left) {
     }
 
     print_trunks(&this_disp);
-    printf("%lu\n", (u_int64_t) root->data); // whatever custom print you need
+    printf("%s\n", (char *) root->data); // whatever custom print you need
 
     if (prev) {
         prev->str = prev_str;
