@@ -2,18 +2,23 @@
 #include <string.h>
 #include <malloc.h>
 #include <stdint-gcc.h>
-#include "tree.h"
+#include "avl.h"
 
-void print(void *data) {
+void print_num(void *data) {
 
     printf("%lu ", (uint64_t) data);
+}
+
+void print_str(void *data) {
+
+    printf("%s ", (char *) data);
 }
 
 int
 person_compare(char *name_1, char *name_2) {
 
     int index = 0;
-    while (name_1[index] == name_2[index]) {
+    while (name_1[index] == name_2[index] && name_2[index]) {
         ++index;
     }
 
@@ -25,15 +30,14 @@ int int_cmp(const void *input_1, const void *input_2) {
 }
 
 int main(void) {
-    uint64_t arr[] = {90, 1, 8, 20, 20, 89, 13, 89, 81, 61, 62, 39, 96, 29, 93};
-//    uint64_t arr2[] = {90, 1, 8, 20, 20, 89, 13, 89, 81, 61, 62, 39, 96, 29, 93};
-//    char *arr2[] = {"Kyle", "Jacob", "Chante", "Tim", "Craig", "Sheriff",
-//                    "Jill", "Jillian"};
+//    uint64_t arr[] = {90, 1, 8, 20, 20, 89, 13, 89, 81, 61, 62, 39, 96, 29, 93};
+    char *arr[] = {"Kyle", "Jacob", "Chante", "Tim", "Craig", "Sheriff",
+                   "Jill", "Jillian"};
 
     size_t arr_size = sizeof(arr) / sizeof(arr[0]);
 
-    tree *tree = tree_create((int (*)(void *, void *)) int_cmp,
-                             (void (*)(void *)) print);
+    tree *tree = tree_create((int (*)(void *, void *)) person_compare,
+                             (void (*)(void *)) print_str);
     int ret = 0;
     for (size_t i = 0; i < arr_size; ++i) {
         ret = tree_insert(tree, (void *) arr[i]);
@@ -41,6 +45,7 @@ int main(void) {
             return 1;
         }
     }
+    printf("Arr Size: %zu\n", arr_size);
 
     printf("Preorder: ");
     preorder(tree);
@@ -55,13 +60,13 @@ int main(void) {
 
     void *sizes = tree_maximum(tree);
     if (sizes) {
-        printf("Tree Max: %lu\n", (uint64_t) sizes);
+        printf("Tree Max: %s\n", (char *) sizes);
     } else {
         printf("Tree Max: 0\n");
     }
     sizes = tree_minimum(tree);
     if (sizes) {
-        printf("Tree Min: %lu\n", (uint64_t) sizes);
+        printf("Tree Min: %s\n", (char *) sizes);
     } else {
         printf("Tree Min: 0\n");
     }
@@ -74,7 +79,7 @@ int main(void) {
         ret = tree_delete(&tree, (void *) arr[i]);
 
         if (ret) {
-            printf("Deleted: %lu\n", arr[i]);
+            printf("Deleted: %s\n", arr[i]);
             print_visual(tree);
         }
     }
