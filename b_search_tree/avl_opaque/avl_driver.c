@@ -4,12 +4,12 @@
 #include <stdint-gcc.h>
 #include "avl.h"
 
-//void print(void *data) {
-//
-//    printf("%lu ", (uint64_t) data);
-//}
+void print_num(void *data) {
 
-void print(void *data) {
+    printf("%lu ", (uint64_t) data);
+}
+
+void print_str(void *data) {
 
     printf("%s ", (char *) data);
 }
@@ -31,17 +31,13 @@ int int_cmp(const void *input_1, const void *input_2) {
 
 int main(void) {
 //    uint64_t arr[] = {90, 1, 8, 20, 20, 89, 13, 89, 81, 61, 62, 39, 96, 29, 93};
-//    uint64_t arr2[] = {90, 1, 8, 20, 20, 89, 13, 89, 81, 61, 62, 39, 96, 29, 93};
     char *arr[] = {"Kyle", "Jacob", "Chante", "Tim", "Craig", "Sheriff",
                    "Jill", "Jillian"};
-
-    char *arr2[] = {"Kyle", "Jacob", "Chante", "Tim", "Craig", "Sheriff",
-                    "Jill", "Jillian"};
 
     size_t arr_size = sizeof(arr) / sizeof(arr[0]);
 
     tree *tree = tree_create((int (*)(void *, void *)) person_compare,
-                             (void (*)(void *)) print);
+                             (void (*)(void *)) print_str);
     int ret = 0;
     for (size_t i = 0; i < arr_size; ++i) {
         ret = tree_insert(tree, (void *) arr[i]);
@@ -80,10 +76,10 @@ int main(void) {
     ret = 0;
     for (int i = 0; i < arr_size; ++i) {
 
-        ret = tree_delete(&tree, (void *) arr2[i]);
+        ret = tree_delete(&tree, (void *) arr[i]);
 
         if (ret) {
-            printf("Deleted: %s\n", arr2[i]);
+            printf("Deleted: %s\n", arr[i]);
             print_visual(tree);
         }
     }
