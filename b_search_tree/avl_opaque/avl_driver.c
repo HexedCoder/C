@@ -49,7 +49,7 @@ int main(void) {
             return 1;
         }
     }
-    printf("Arr Size: %zu", arr_size);
+    printf("Arr Size: %zu\n", arr_size);
 
     printf("Preorder: ");
     preorder(tree);
