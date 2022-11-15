@@ -10,14 +10,12 @@ OBJ_DIR := obj
 TST_DIR := .
 
 SRCS := $(wildcard $(SRC_DIR)/*.c)
-SRCS := $(filter-out $(SRC_DIR)/$(BIN)_test.c, $(SRCS))
-OBJS += $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(SRCS))
+OBJS := $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(SRCS))
 OBJS := $(filter-out $(OBJ_DIR)/$(BIN)_test.o, $(OBJS))
-
 
 BIN := llist
 CHECK := $(BIN)_check
-CC:= gcc
+CC:= gcc-9
 
 TSTS := $(wildcard $(TST_DIR)/*.c)
 TST_OBJS += $(patsubst $(TST_DIR)/%.c, $(OBJ_DIR)/%.o, $(TSTS))
@@ -57,6 +55,8 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 $(OBJ_DIR)/%.o: $(TST_DIR)/%.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
+OBJS := $(filter-out $(OBJ_DIR)/$(BIN)_test.o, $(OBJS))
+
 $(BIN): $(OBJS)
 	$(CC) $(CFLAGS) $^ -o $@
 
@@ -65,6 +65,7 @@ $(CHECK): $(TST_OBJS)
 	./$(CHECK)
 
 print:
-	$(info $$CFLAGS is [${CFLAGS}])
+#	$(info $$CFLAGS is [${CFLAGS}])
+	$(info $$SRCS is [${SRCS}])
 	$(info $$OBJS is [${OBJS}])
 	$(info $$TST_OBJS is [${TST_OBJS}])
