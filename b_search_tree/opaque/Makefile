@@ -11,7 +11,7 @@ SRCS := $(wildcard *.c)
 OBJS := $(patsubst %.c, %.o, $(SRCS))
 
 BIN := driver
-CC:= gcc
+CC:= gcc-9
 
 all: $(BIN)
 	./$(BIN)
