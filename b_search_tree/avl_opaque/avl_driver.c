@@ -31,8 +31,8 @@ int int_cmp(const void *input_1, const void *input_2)
 int main(void)
 {
 	//    uint64_t arr[] = {90, 1, 8, 20, 20, 89, 13, 89, 81, 61, 62, 39, 96, 29, 93};
-	char *arr[] = { "Kyle",	 "Jacob",   "Chante", "Tim",
-			"Craig", "Sheriff", "Jill",   "Jillian" };
+	const char *arr[] = { "Kyle",  "Jacob",	  "Chante", "Tim",
+			      "Craig", "Sheriff", "Jill",   "Jillian" };
 
 	size_t arr_size = sizeof(arr) / sizeof(arr[0]);
 

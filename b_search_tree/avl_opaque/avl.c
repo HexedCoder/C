@@ -71,6 +71,68 @@ static int get_t_size(node_t *node)
 	return 1 + count;
 }
 
+static node_t *rotate_left(tree **root, node_t *new_node)
+{
+	tree *ptr = *root;
+
+	// Return if node is null or the root, or is not a right child.
+	if (!new_node || new_node == ptr->root ||
+	    new_node->data < new_node->parent->data)
+		return new_node;
+	node_t *parent = new_node->parent;
+	node_t *parent_parent = parent->parent;
+	node_t *child = new_node->left;
+	new_node = parent_parent;
+	new_node = parent;
+	parent->parent = new_node;
+	parent->right = child;
+	if (child != 0) {
+		child->parent = parent;
+	}
+	if (parent_parent != 0) {
+		if (parent->data < parent_parent->data) {
+			parent_parent->left = new_node;
+		} else {
+			parent_parent->right = new_node;
+		}
+	} else {
+		// Parent of rotated node is the root; rotated node becomes the new root.
+		ptr->root = new_node;
+	}
+	return new_node;
+}
+
+static node_t *rotate_right(tree **root, node_t *new_node)
+{
+	tree *ptr = *root;
+	// Return if node is null or the root, or is not a left child.
+	if (!new_node || new_node == ptr->root ||
+	    new_node->data > new_node->parent->data)
+		return new_node;
+
+	node_t *parent = new_node->parent;
+	node_t *parent_parent = parent->parent;
+	node_t *child = new_node->right;
+	new_node = parent_parent;
+	new_node = parent;
+	parent->parent = new_node;
+	parent->left = child;
+	if (child != 0) {
+		child->parent = parent;
+	}
+	if (parent_parent != 0) {
+		if (parent->data < parent_parent->data) {
+			parent_parent->left = new_node;
+		} else {
+			parent_parent->right = new_node;
+		}
+	} else {
+		// Parent of rotated node is the root; rotated node becomes the new root.
+		ptr->root = new_node;
+	}
+	return new_node;
+}
+
 static int insert(tree *tree, void *data)
 {
 	int ret = 0;
@@ -131,122 +193,69 @@ static int insert(tree *tree, void *data)
 	}
 
 	node->height = 1;
-	//	int bf = 0;
+	int bf = 0;
 
-	//	// Update heights and test for AVL violation.
-	//	while (node->parent != 0 && bf <= 1) {
-	//		node = node->parent;
-	//		int lh = (node->left) ? node->left->height : 0;
-	//		int rh = (node->right) ? node->right->height : 0;
-	//		int max = (rh > lh) ? rh : lh;
-	//		bf = abs(rh - lh);
-	//		node->height = max + 1;
-	//	}
-	//	if (node->parent == 0 || bf <= 1) {
-	//		return 0;
-	//	}
-	//
-	//	ret = tree->compare_func(data < node->data);
-	//
-	//	// Automatic correction of AVL violation (self-balance).
-	//	if (-1 == ret) {
-	//		// Determine if grandchild of first imbalanced node is LL or LR.
-	//		ret = tree->compare_func(data, node->left->data);
-	//
-	//		if (-1 == ret) {
-	//			// LL
-	//			node = rotate_right(&root, node->left);
-	//			node->right->height = node->height - 1;
-	//		} else {
-	//			// LR
-	//			node = rotate_right(
-	//				&root, rotate_left(&root, node->left->right));
-	//			if (node != 0) {
-	//				node->left->height = node->height;
-	//				node->right->height = node->height;
-	//				++(node->height);
-	//			}
-	//		}
-	//	} else {
-	//		// Determine if grandchild of first imbalanced node is RR or RL.
-	//		if (data->data > node->right->data) {
-	//			// RR
-	//			node = rotate_left(&root, node->right);
-	//			node->left->height = node->height - 1;
-	//		} else {
-	//			// RL
-	//			node = rotate_left(
-	//				&root, rotate_right(&root, node->right->left));
-	//			if (node != 0) {
-	//				node->left->height = node->height;
-	//				node->right->height = node->height;
-	//				++(node->height);
-	//			}
-	//		}
-	//	}
+	// Update heights and test for AVL violation.
+	while (node->parent && bf <= 1) {
+		node = node->parent;
+		int lh = (node->left) ? node->left->height : 0;
+		int rh = (node->right) ? node->right->height : 0;
+		int max = (rh > lh) ? rh : lh;
+		bf = abs(rh - lh);
+		node->height = max + 1;
+	}
+
+	if (node->parent == 0 || bf <= 1) {
+		return 1;
+	}
+
+	ret = tree->compare_func(data, node->data);
+
+	printf("BF: %d\n", bf);
+	printf("ret: %d\n", ret);
+
+	//	 Automatic correction of AVL violation (self-balance).
+	if (-1 == ret) {
+		// Determine if grandchild of first imbalanced node is LL or LR.
+		ret = tree->compare_func(data, node->left->data);
+
+		if (-1 == ret) {
+			// LL
+			node = rotate_right(&tree, node->left);
+			node->right->height = node->height - 1;
+		} else {
+			// LR
+			node = rotate_right(
+				&tree, rotate_left(&tree, node->left->right));
+			if (node != 0) {
+				node->left->height = node->height;
+				node->right->height = node->height;
+				++(node->height);
+			}
+		}
+	} else {
+		// Determine if grandchild of first imbalanced node is RR or RL.
+		if (data > node->right->data) {
+			// RR
+			node = rotate_left(&tree, node->right);
+			node->left->height = node->height - 1;
+		} else {
+			// RL
+			node = rotate_left(
+				&tree, rotate_right(&tree, node->right->left));
+			if (node != 0) {
+				node->left->height = node->height;
+				node->right->height = node->height;
+				++(node->height);
+			}
+		}
+	}
 
 	ret = 1;
 
 INSERT_EXIT:
 	return ret;
 } /* tree_insert() */
-
-//tree *rotate_right(tree **root, tree *new_node)
-//{
-//	// Return if node is null or the root, or is not a left child.
-//	if (new_node == 0 || new_node == *root ||
-//	    new_node->data > new_node->parent->data)
-//		return new_node;
-//	tree *parent = new_node->parent;
-//	tree *parent_parent = parent->parent;
-//	tree *child = new_node->right;
-//	new_node->parent = parent_parent;
-//	new_node->right = parent;
-//	parent->parent = new_node;
-//	parent->left = child;
-//	if (child != 0) {
-//		child->parent = parent;
-//	}
-//	if (parent_parent != 0) {
-//		if (parent->data < parent_parent->data) {
-//			parent_parent->left = new_node;
-//		} else {
-//			parent_parent->right = new_node;
-//		}
-//	} else {
-//		// Parent of rotated node is the root; rotated node becomes the new root.
-//		*root = new_node;
-//	}
-//	return new_node;
-//}
-//
-//tree *rotate_left(tree **t, tree *n)
-//{
-//	// Return if node is null or the root, or is not a right child.
-//	if (n == 0 || n == *t || n->data < n->parent->data)
-//		return n;
-//	tree *p = n->parent;
-//	tree *pp = p->parent;
-//	tree *c = n->left;
-//	n->parent = pp;
-//	n->left = p;
-//	p->parent = n;
-//	p->right = c;
-//	if (c != 0) {
-//		c->parent = p;
-//	}
-//	if (pp != 0) {
-//		if (p->data < pp->data) {
-//			pp->left = n;
-//		} else {
-//			pp->right = n;
-//		}
-//	} else {
-//		// Parent of rotated node is the root; rotated node becomes the new root.
-//		*t = n;
-//	}
-//	return n;
-//}
 
 int avl_insert(tree *root, void *data)
 {
