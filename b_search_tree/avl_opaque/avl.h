@@ -34,7 +34,7 @@ void levelorder(tree *root);
  * @return 1 On success
  * @return 0 On failure
  */
-int tree_insert(tree *root, void *data);
+int avl_insert(tree *root, void *data);
 
 void *tree_search(tree *, void *);
 
