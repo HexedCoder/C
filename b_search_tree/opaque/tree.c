@@ -18,6 +18,8 @@ struct tree {
 	action action_func;
 };
 
+int num_people = 0;
+
 static node_t *create_node(void *data);
 
 static void preorder_action(node_t *node, action action_func);
@@ -164,10 +166,10 @@ static int get_income_action(node_t *node)
 	if (!node) {
 		return 0;
 	}
-	person *tmp = node->data;
+	++num_people;
 
+	person *tmp = node->data;
 	int income = tmp->income;
-	printf("Income: %d\n", tmp->income);
 
 	income += get_income_action(node->left);
 	income += get_income_action(node->right);
@@ -181,10 +183,16 @@ int get_income(tree *tree)
 		return 0;
 	}
 
-	int size = tree_size(tree);
 	double income = get_income_action(tree->root);
 
-	return income / size;
+	int people = num_people;
+	num_people = 0;
+
+	if (people) {
+		return income / people;
+	} else {
+		return 0;
+	}
 }
 
 static int get_income_age_action(node_t *node, int min, int max)
@@ -194,20 +202,18 @@ static int get_income_age_action(node_t *node, int min, int max)
 	}
 
 	int income = 0;
-	int num_people = 0;
 
 	income += get_income_age_action(node->left, min, max);
 	income += get_income_age_action(node->right, min, max);
 
 	person *tmp = node->data;
 	if (tmp->age >= min && tmp->age <= max) {
-		num_people += 1;
+		++num_people;
 		income += tmp->income;
 	} else {
 		income += 0;
 	}
 
-	printf("Final: %d %d\n", income, num_people);
 	return income;
 }
 
@@ -218,8 +224,14 @@ int get_age_income(tree *tree, int min, int max)
 	}
 
 	double income = get_income_age_action(tree->root, min, max);
+	int people = num_people;
+	num_people = 0;
 
-	return income;
+	if (people) {
+		return income / people;
+	} else {
+		return 0;
+	}
 }
 
 static void postorder_action(node_t *node, action action_func)
@@ -335,7 +347,7 @@ void *tree_maximum(tree *tree)
 
 	person *tmp = get_max(tree->root);
 
-	return tmp->fname;
+	return tmp->ssn;
 }
 
 static void *get_min(node_t *node)
@@ -354,7 +366,7 @@ void *tree_minimum(tree *tree)
 
 	person *tmp = get_min(tree->root);
 
-	return tmp->fname;
+	return tmp->ssn;
 }
 
 static int get_t_size(node_t *node)

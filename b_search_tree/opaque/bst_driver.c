@@ -12,7 +12,7 @@ void print_num(void *data)
 void print_str(void *data)
 {
 	person *tmp = (person *)data;
-	printf("%d ", tmp->age);
+	printf("%s ", tmp->fname);
 }
 
 int person_compare(person *person_1, person *person_2)
@@ -86,35 +86,35 @@ int main(int argc, char *argv[])
 
 	printf("Preorder: ");
 	preorder(tree);
-	printf("Postorder: ");
+	printf("\nPostorder: ");
 	postorder(tree);
-	printf("Inorder: ");
+	printf("\nInorder: ");
 	inorder(tree);
-	printf("Level order: ");
+	printf("\nLevel order: ");
 	levelorder(tree);
 
-	printf("Size: %d\n", tree_size(tree));
+	printf("\nTree size: %d\n", tree_size(tree));
 
-	void *sizes = tree_maximum(tree);
-	if (sizes) {
-		printf("Tree Max: %s\n", (char *)sizes);
-	} else {
-		printf("Tree Max: 0\n");
-	}
-	sizes = tree_minimum(tree);
+	void *sizes = tree_minimum(tree);
 	if (sizes) {
 		printf("Tree Min: %s\n", (char *)sizes);
 	} else {
 		printf("Tree Min: 0\n");
 	}
+	sizes = tree_maximum(tree);
+	if (sizes) {
+		printf("Tree Max: %s\n", (char *)sizes);
+	} else {
+		printf("Tree Max: 0\n");
+	}
 
 	int income = get_income(tree);
-	printf("Average Income: %d\n", income);
+	printf("Average Income: $%d\n", income);
 
-	income = get_age_income(tree, 62, 62);
-	printf("Average Income between 50-59: %d\n", income);
+	income = get_age_income(tree, 50, 59);
+	printf("Average Income between 62-62: $%d\n", income);
 
-	//	print_visual(tree);
+	print_visual(tree);
 
 	tree_destroy(&tree);
 }
