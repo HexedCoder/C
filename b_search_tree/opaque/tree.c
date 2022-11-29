@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdint-gcc.h>
 
-#include "avl.h"
+#include "tree.h"
 #include "llist.h"
 
 typedef struct node_t {
@@ -159,6 +159,69 @@ static void preorder_action(node_t *node, action action_func)
 	preorder_action(node->right, action_func);
 }
 
+static int get_income_action(node_t *node)
+{
+	if (!node) {
+		return 0;
+	}
+	person *tmp = node->data;
+
+	int income = tmp->income;
+	printf("Income: %d\n", tmp->income);
+
+	income += get_income_action(node->left);
+	income += get_income_action(node->right);
+
+	return income;
+}
+
+int get_income(tree *tree)
+{
+	if (!tree) {
+		return 0;
+	}
+
+	int size = tree_size(tree);
+	double income = get_income_action(tree->root);
+
+	return income / size;
+}
+
+static int get_income_age_action(node_t *node, int min, int max)
+{
+	if (!node) {
+		return 0;
+	}
+
+	int income = 0;
+	int num_people = 0;
+
+	income += get_income_age_action(node->left, min, max);
+	income += get_income_age_action(node->right, min, max);
+
+	person *tmp = node->data;
+	if (tmp->age >= min && tmp->age <= max) {
+		num_people += 1;
+		income += tmp->income;
+	} else {
+		income += 0;
+	}
+
+	printf("Final: %d %d\n", income, num_people);
+	return income;
+}
+
+int get_age_income(tree *tree, int min, int max)
+{
+	if (!tree) {
+		return 0;
+	}
+
+	double income = get_income_age_action(tree->root, min, max);
+
+	return income;
+}
+
 static void postorder_action(node_t *node, action action_func)
 {
 	if (!node) {
@@ -270,7 +333,9 @@ void *tree_maximum(tree *tree)
 		return NULL;
 	}
 
-	return get_max(tree->root);
+	person *tmp = get_max(tree->root);
+
+	return tmp->fname;
 }
 
 static void *get_min(node_t *node)
@@ -287,7 +352,9 @@ void *tree_minimum(tree *tree)
 		return 0;
 	}
 
-	return get_min(tree->root);
+	person *tmp = get_min(tree->root);
+
+	return tmp->fname;
 }
 
 static int get_t_size(node_t *node)
@@ -463,7 +530,8 @@ static void print_recursive(node_t *root, struct trunk *prev, int is_left)
 	}
 
 	print_trunks(&this_disp);
-	printf("%s\n", (char *)root->data); // whatever custom print you need
+	person *tmp = root->data;
+	printf("%d\n", tmp->age); // whatever custom print you need
 
 	if (prev) {
 		prev->str = prev_str;

@@ -7,6 +7,16 @@ typedef int (*compare)(void *, void *);
 
 typedef void (*action)(void *);
 
+typedef struct person person;
+
+typedef struct person {
+	int age;
+	int income;
+	char *fname;
+	char *lname;
+	char *ssn;
+} person;
+
 /**
  * @brief Function to allocate tree
  *
@@ -19,6 +29,10 @@ tree *tree_create(compare compare_func, action action_func);
 void print_visual(tree *root);
 
 void preorder(tree *root);
+
+int get_income(tree *tree);
+
+int get_age_income(tree *tree, int min, int max);
 
 void postorder(tree *root);
 
