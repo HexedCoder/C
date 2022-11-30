@@ -112,9 +112,9 @@ int main(int argc, char *argv[])
 	printf("Average Income: $%d\n", income);
 
 	income = get_age_income(tree, 50, 59);
-	printf("Average Income between 62-62: $%d\n", income);
+	printf("Average Income between 50-59: $%d\n", income);
 
-	print_visual(tree);
+	//	print_visual(tree);
 
 	tree_destroy(&tree);
 }

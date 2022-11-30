@@ -20,7 +20,7 @@ debug: CFLAGS += -g3
 debug: $(BIN)
 
 run: $(BIN)
-	./$(BIN)
+	./$(BIN) input
 
 check: $(CHECK)
 

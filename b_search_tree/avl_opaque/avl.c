@@ -1,6 +1,5 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include <stdint-gcc.h>
 
 #include "avl.h"
 #include "llist.h"
@@ -13,7 +12,7 @@ typedef struct node_t {
 	void *data;
 } node_t;
 
-struct tree {
+struct avl_t {
 	struct node_t *root;
 	compare compare_func;
 	action action_func;
@@ -33,9 +32,9 @@ static void *get_min(node_t *node);
 
 static int get_t_size(node_t *node);
 
-tree *tree_create(compare compare_func, action action_func)
+avl_t *tree_create(compare compare_func, action action_func)
 {
-	tree *tree = calloc(1, sizeof(*tree));
+	avl_t *tree = calloc(1, sizeof(*tree));
 
 	tree->compare_func = compare_func;
 	tree->action_func = action_func;
@@ -71,196 +70,182 @@ static int get_t_size(node_t *node)
 	return 1 + count;
 }
 
-static node_t *rotate_left(tree **root, node_t *new_node)
+static node_t *rotate_left(avl_t **root_tree, node_t *new_node)
 {
-	tree *ptr = *root;
+	avl_t *ptr = *root_tree;
+	node_t **root_node = &ptr->root;
 
-	// Return if node is null or the root, or is not a right child.
-	if (!new_node || new_node == ptr->root ||
-	    new_node->data < new_node->parent->data)
+	if (!new_node || new_node == *root_node ||
+	    0 < ptr->compare_func(new_node->parent->data, new_node->data)) {
 		return new_node;
+	}
+
 	node_t *parent = new_node->parent;
-	node_t *parent_parent = parent->parent;
+	node_t *gparent = parent->parent;
 	node_t *child = new_node->left;
-	new_node = parent_parent;
-	new_node = parent;
+
+	new_node->parent = gparent;
+	new_node->left = parent;
 	parent->parent = new_node;
 	parent->right = child;
-	if (child != 0) {
+
+	if (child) {
 		child->parent = parent;
 	}
-	if (parent_parent != 0) {
-		if (parent->data < parent_parent->data) {
-			parent_parent->left = new_node;
+	if (gparent) {
+		if (ptr->compare_func(parent->data, gparent->data) < 0) {
+			gparent->left = new_node;
 		} else {
-			parent_parent->right = new_node;
+			gparent->right = new_node;
 		}
 	} else {
-		// Parent of rotated node is the root; rotated node becomes the new root.
+		// parent of rotated new_node is the root; rotated new_node
+		// becomes root
 		ptr->root = new_node;
 	}
+
 	return new_node;
 }
 
-static node_t *rotate_right(tree **root, node_t *new_node)
+static node_t *rotate_right(avl_t **root_tree, node_t *new_node)
 {
-	tree *ptr = *root;
-	// Return if node is null or the root, or is not a left child.
-	if (!new_node || new_node == ptr->root ||
-	    new_node->data > new_node->parent->data)
-		return new_node;
+	avl_t *ptr = *root_tree;
+	node_t **root_node = &ptr->root;
 
+	if (!new_node || new_node == *root_node ||
+	    ptr->compare_func(new_node->parent->data, new_node->data) < 0) {
+		printf("Returned");
+		return new_node;
+	}
 	node_t *parent = new_node->parent;
-	node_t *parent_parent = parent->parent;
+	node_t *gparent = parent->parent;
 	node_t *child = new_node->right;
-	new_node = parent_parent;
-	new_node = parent;
+
+	new_node->parent = gparent;
+	new_node->right = parent;
 	parent->parent = new_node;
 	parent->left = child;
-	if (child != 0) {
+
+	if (child) {
 		child->parent = parent;
 	}
-	if (parent_parent != 0) {
-		if (parent->data < parent_parent->data) {
-			parent_parent->left = new_node;
+	if (gparent) {
+		if (ptr->compare_func(parent->data, gparent->data) < 0) {
+			gparent->left = new_node;
 		} else {
-			parent_parent->right = new_node;
+			gparent->right = new_node;
 		}
 	} else {
-		// Parent of rotated node is the root; rotated node becomes the new root.
+		// parent of rotated new_node is the root; rotated new_node
+		// becomes root
 		ptr->root = new_node;
 	}
+
 	return new_node;
 }
 
-static int insert(tree *tree, void *data)
+static node_t *insert(node_t *tree, void *data, compare compare_func)
 {
-	int ret = 0;
-
-	if (!tree || !data) {
-		goto INSERT_EXIT;
+	int result = compare_func(data, tree->data);
+	if (!result) {
+		return NULL;
 	}
 
-	if (!tree->compare_func) {
-		printf("Null compare function given\n");
-		goto INSERT_EXIT;
-	}
+	node_t *temp = NULL;
 
-	if (!tree->root) {
-		node_t *new_node = create_node(data);
-
-		tree->root = new_node;
-		ret = 1;
-		goto INSERT_EXIT;
-	}
-
-	node_t *node = tree->root;
-
-	while (node) {
-		ret = tree->compare_func(node->data, data);
-
-		if (0 > ret) {
-			if (!node->left) {
-				node_t *new_node = create_node(data);
-
-				if (!new_node) {
-					goto INSERT_EXIT;
-				}
-
-				node->left = new_node;
-				new_node->parent = node;
-				break;
-			} else {
-				node = node->left;
-			}
-		} else if (0 < ret) {
-			if (!node->right) {
-				node_t *new_node = create_node(data);
-
-				if (!new_node) {
-					goto INSERT_EXIT;
-				}
-
-				node->right = new_node;
-				new_node->parent = node;
-				break;
-			} else {
-				node = node->right;
-			}
+	if (result < 0) {
+		if (tree->left) {
+			return insert(tree->left, data, compare_func);
 		} else {
-			break;
-		}
-	}
-
-	node->height = 1;
-	int bf = 0;
-
-	// Update heights and test for AVL violation.
-	while (node->parent && bf <= 1) {
-		node = node->parent;
-		int lh = (node->left) ? node->left->height : 0;
-		int rh = (node->right) ? node->right->height : 0;
-		int max = (rh > lh) ? rh : lh;
-		bf = abs(rh - lh);
-		node->height = max + 1;
-	}
-
-	if (node->parent == 0 || bf <= 1) {
-		return 1;
-	}
-
-	ret = tree->compare_func(data, node->data);
-
-	printf("BF: %d\n", bf);
-	printf("ret: %d\n", ret);
-
-	//	 Automatic correction of AVL violation (self-balance).
-	if (-1 == ret) {
-		// Determine if grandchild of first imbalanced node is LL or LR.
-		ret = tree->compare_func(data, node->left->data);
-
-		if (-1 == ret) {
-			// LL
-			node = rotate_right(&tree, node->left);
-			node->right->height = node->height - 1;
-		} else {
-			// LR
-			node = rotate_right(
-				&tree, rotate_left(&tree, node->left->right));
-			if (node != 0) {
-				node->left->height = node->height;
-				node->right->height = node->height;
-				++(node->height);
+			temp = create_node(data);
+			if (temp) {
+				temp->parent = tree;
+				tree->left = temp;
 			}
 		}
 	} else {
-		// Determine if grandchild of first imbalanced node is RR or RL.
-		if (data > node->right->data) {
-			// RR
-			node = rotate_left(&tree, node->right);
-			node->left->height = node->height - 1;
+		if (tree->right) {
+			return insert(tree->right, data, compare_func);
 		} else {
-			// RL
-			node = rotate_left(
-				&tree, rotate_right(&tree, node->right->left));
-			if (node != 0) {
-				node->left->height = node->height;
-				node->right->height = node->height;
-				++(node->height);
+			temp = create_node(data);
+			if (temp) {
+				temp->parent = tree;
+				tree->right = temp;
 			}
 		}
 	}
 
-	ret = 1;
-
-INSERT_EXIT:
-	return ret;
+	return temp;
 } /* tree_insert() */
 
-int avl_insert(tree *root, void *data)
+void *avl_insert(avl_t *tree, void *data)
 {
-	// Regular binary search tree insertion.
-	return insert(root, data);
+	if (!tree || !data) {
+		return NULL;
+	}
+
+	node_t *new_node = NULL;
+	if (!tree->root) {
+		new_node = calloc(1, sizeof(*new_node));
+		tree->root = new_node;
+		if (new_node) {
+			new_node->data = data;
+		}
+	} else {
+		new_node = insert(tree->root, data, tree->compare_func);
+	}
+	if (!new_node) {
+		return NULL;
+	}
+	new_node->height = 1;
+	int bf = 0;
+
+	while (new_node->parent && bf < 2) {
+		new_node = new_node->parent;
+		int l_bf = new_node->left ? new_node->left->height : 0;
+		int r_bf = new_node->right ? new_node->right->height : 0;
+		int max = (l_bf < r_bf) ? r_bf : l_bf;
+		bf = abs(r_bf - l_bf);
+		new_node->height = max + 1;
+	}
+
+	// no balance needed
+	if (!new_node->parent && bf < 2) {
+		return data;
+	}
+
+	if (tree->compare_func(data, new_node->data) < 0) {
+		if (tree->compare_func(data, new_node->left->data) < 0) {
+			new_node = rotate_right(&tree, new_node->left);
+			new_node->right->height = new_node->height - 1;
+		} else {
+			new_node = rotate_right(
+				&tree,
+				rotate_left(&tree, new_node->left->right));
+
+			if (new_node) {
+				new_node->left->height = new_node->height;
+				new_node->right->height = new_node->height;
+				++new_node->height;
+			}
+		}
+	} else {
+		if (0 < tree->compare_func(data, new_node->right->data)) {
+			new_node = rotate_left(&tree, new_node->right);
+			new_node->left->height = new_node->height - 1;
+		} else {
+			new_node = rotate_left(
+				&tree,
+				rotate_right(&tree, new_node->right->left));
+			if (new_node) {
+				new_node->left->height = new_node->height;
+				new_node->right->height = new_node->height;
+				++new_node->height;
+			}
+		}
+	}
+
+	return data;
 }
 
 static void *find(node_t *node, void *value, compare compare_func)
@@ -271,16 +256,16 @@ static void *find(node_t *node, void *value, compare compare_func)
 
 	int ret = compare_func(value, node->data);
 
-	if (ret > 0) {
+	if (ret < 0) {
 		return find(node->left, value, compare_func);
-	} else if (ret < 0) {
+	} else if (ret > 0) {
 		return find(node->right, value, compare_func);
 	} else {
 		return node;
 	}
 }
 
-void *tree_search(tree *tree, void *value)
+void *tree_search(avl_t *tree, void *value)
 {
 	if (!tree || !value) {
 		return NULL;
@@ -322,7 +307,7 @@ static void inorder_action(node_t *node, action action_func)
 	inorder_action(node->right, action_func);
 }
 
-void preorder(tree *tree)
+void preorder(avl_t *tree)
 {
 	if (!tree) {
 		return;
@@ -337,7 +322,7 @@ void preorder(tree *tree)
 	printf("\n");
 }
 
-void postorder(tree *tree)
+void postorder(avl_t *tree)
 {
 	if (!tree) {
 		return;
@@ -352,7 +337,7 @@ void postorder(tree *tree)
 	printf("\n");
 }
 
-void inorder(tree *tree)
+void inorder(avl_t *tree)
 {
 	if (!tree) {
 		return;
@@ -367,7 +352,7 @@ void inorder(tree *tree)
 	printf("\n");
 }
 
-void levelorder(tree *tree)
+void level_order(avl_t *tree)
 {
 	if (!tree) {
 		return;
@@ -405,7 +390,7 @@ static void *get_max(node_t *node)
 	return node->data;
 }
 
-void *tree_maximum(tree *tree)
+void *tree_maximum(avl_t *tree)
 {
 	if (!tree->root) {
 		return NULL;
@@ -422,7 +407,7 @@ static void *get_min(node_t *node)
 	return node->data;
 }
 
-void *tree_minimum(tree *tree)
+void *tree_minimum(avl_t *tree)
 {
 	if (!tree->root) {
 		return 0;
@@ -431,7 +416,7 @@ void *tree_minimum(tree *tree)
 	return get_min(tree->root);
 }
 
-int tree_size(tree *tree)
+int tree_size(avl_t *tree)
 {
 	if (!tree) {
 		return 0;
@@ -450,11 +435,13 @@ static void *min_node(node_t *node)
 
 static int delete_node(node_t **root, node_t **target, compare compare_func)
 {
-	node_t *node = *target;
-
-	if (!node || !root) {
+	if (!target || !root) {
 		return 0;
 	}
+
+	node_t *node = *target;
+
+	printf("Removing %d\n", *(int *)node->data);
 
 	// Handle root node
 
@@ -467,6 +454,8 @@ static int delete_node(node_t **root, node_t **target, compare compare_func)
 
 		if (!node->left || !node->right) {
 			node_t *temp = node->left ? node->left : node->right;
+			printf("Temp Node: %s\n",
+			       (char *)temp->data); // How to print data
 			temp->parent = NULL;
 			free(*target);
 			*root = temp;
@@ -476,12 +465,15 @@ static int delete_node(node_t **root, node_t **target, compare compare_func)
 
 	// Handle if inner node has no right for minimum
 	if (!node->right) {
+		printf("%d Has no right\n", *(int *)node->data);
 		int ret = compare_func(node->parent->data, node->data);
 
 		if (0 < ret) {
-			node->parent->right = node->left;
-		} else {
+			printf("%d is less than %d\n", *(int *)node->data,
+			       *(int *)node->parent->data);
 			node->parent->left = node->left;
+		} else {
+			node->parent->right = node->left;
 		}
 		if (node->left) {
 			node->left->parent = node->parent;
@@ -513,20 +505,20 @@ static int delete_node(node_t **root, node_t **target, compare compare_func)
 	return 1;
 }
 
-int tree_delete(tree **root, void *val)
+int tree_delete(avl_t **root, void *val)
 {
-	tree *ptr = *root;
+	avl_t *ptr = *root;
 
 	if (!ptr || !ptr->compare_func) {
 		return 0;
 	}
-
 	node_t *search_node = tree_search(*root, val);
 
 	if (!search_node) {
 		printf("Search Value Not Found\n");
 		return 0;
 	}
+	printf("Found at %p\n", search_node);
 
 	return delete_node(&ptr->root, &search_node, ptr->compare_func);
 }
@@ -543,13 +535,13 @@ static void delete(node_t **node)
 	*node = NULL;
 }
 
-void tree_destroy(tree **p_tree)
+void tree_destroy(avl_t **p_tree)
 {
 	if (!p_tree || !*p_tree) {
 		return;
 	}
 
-	tree *tmp = *p_tree;
+	avl_t *tmp = *p_tree;
 
 	delete (&tmp->root);
 	free(*p_tree);
@@ -590,7 +582,7 @@ static void print_recursive(node_t *root, struct trunk *prev, int is_left)
 	}
 
 	print_trunks(&this_disp);
-	printf("%s\n", (char *)root->data); // whatever custom print you need
+	printf("%d\n", *(int *)root->data); // whatever custom print you need
 
 	if (prev) {
 		prev->str = prev_str;
@@ -603,7 +595,7 @@ static void print_recursive(node_t *root, struct trunk *prev, int is_left)
 	}
 }
 
-void print_visual(tree *root)
+void print_visual(avl_t *root)
 {
 	if (!root) {
 		return;
