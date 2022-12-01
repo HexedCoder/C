@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <errno.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include "trie.h"
 
@@ -24,7 +26,15 @@ int main()
 		insert_node(&dict_root, line);
 	}
 
-	print_dictionary(dict_root);
+	trie_print(dict_root);
+	puts("");
+
+	node_delete(&dict_root, "zygotes");
+	node_delete(&dict_root, "zap");
+
+	trie_print(dict_root);
+
+	trie_delete(&dict_root);
 
 	// close file
 	fclose(file);

@@ -1,6 +1,6 @@
 .PHONY: all check debug profile clean run
 
-CFLAGS := -std=c18 -Wall -Wpedantic -Waggregate-return
+CFLAGS := -std=c18 -Wall -Wvla -Wpedantic -Waggregate-return
 CFLAGS += -Wwrite-strings -Wfloat-equal -D_DEFAULT_SOURCE
 
 LDLIBS := -lm

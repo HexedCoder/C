@@ -11,8 +11,6 @@
 #define TRIE_H
 
 #include <stdbool.h>
-#include <stdlib.h>
-#include <string.h>
 
 #define NUM_CHARS 256 // enough to house string
 
@@ -25,8 +23,12 @@ node *create_node();
 
 bool insert_node(node **root, char *string_to_insert);
 
-void print_dictionary_recursive(node *node, unsigned char *prefix, int length);
+bool trie_search(node *root, char *signed_text);
 
-void print_dictionary(node *root);
+void trie_print(node *root);
+
+bool node_delete(node **root, const char *signed_text);
+
+bool trie_delete(node **root);
 
 #endif /* TRIE_H */
