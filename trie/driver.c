@@ -20,17 +20,18 @@ int main()
 
 	// create NULL node for dictionary
 	node *dict_root = NULL;
+	unsigned char word_array[MAX_LINE_LEN + 1] = { 0 };
 
 	while (fgets(line, MAX_LINE_LEN, file) != NULL) {
 		line[strcspn(line, "\n")] = 0;
 		insert_node(&dict_root, line);
 	}
 
-	trie_print(dict_root);
+	trie_print(dict_root, word_array);
 	puts("");
 
-	const char * word_1 = "zygotes";
-	const char * word_2 = "zap";
+	const char *word_1 = "zygotes";
+	const char *word_2 = "zap";
 
 	printf("zap exists: %d\n", trie_search(dict_root, word_1));
 
@@ -39,7 +40,7 @@ int main()
 
 	printf("zap exists: %d\n", trie_search(dict_root, word_1));
 
-	trie_print(dict_root);
+	trie_print(dict_root, word_array);
 
 	trie_delete(&dict_root);
 

@@ -25,7 +25,7 @@ bool insert_node(node **root, char *string_to_insert);
 
 bool trie_search(node *root, const char *signed_text);
 
-void trie_print(node *root);
+void trie_print(node *root, unsigned char *word_array);
 
 bool node_delete(node **root, const char *signed_text);
 

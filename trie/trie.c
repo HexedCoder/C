@@ -62,11 +62,7 @@ bool insert_node(node **root, char *string_to_insert)
 
 static void print_dictionary_rec(node *node, unsigned char *prefix, int length)
 {
-	unsigned char
-		new_prefix[length + 2]; // +2 for new char and null terminator
-	memcpy(new_prefix, prefix,
-	       length); // copies old prefix to new with new len
-	new_prefix[length + 1] = 0; // null terminates new prefix
+	prefix[length + 1] = 0; // null terminates new prefix
 
 	if (node->end_node) {
 		// if terminal, print the actual word
@@ -75,21 +71,21 @@ static void print_dictionary_rec(node *node, unsigned char *prefix, int length)
 
 	for (int i = 0; i < NUM_CHARS; i++) {
 		if (node->children[i] != NULL) {
-			new_prefix[length] = i;
-			print_dictionary_rec(node->children[i], new_prefix,
+			prefix[length] = i;
+			print_dictionary_rec(node->children[i], prefix,
 					     length + 1);
 		}
 	}
 }
 
-void trie_print(node *root)
+void trie_print(node *root, unsigned char *word_array)
 {
 	if (root == NULL) {
 		printf("Dictionary is empty!\n");
 		return;
 	}
 	// root, no prefix yet, # of characters seen so far
-	print_dictionary_rec(root, NULL, 0);
+	print_dictionary_rec(root, word_array, 0);
 }
 
 bool trie_search(node *root, const char *signed_text)
