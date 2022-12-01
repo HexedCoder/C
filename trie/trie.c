@@ -1,11 +1,20 @@
+/** @file trie.c
+*
+* @brief This module defines the templates from trie.h
+ * Adopted by Jacob Sorber https://www.youtube.com/watch?v=NDfAYZCHstI
+*
+* @par
+* COPYRIGHT NOTICE: (c) 2022 Jacob Hitchcox
+*/
+
 #include "trie.h"
 #include <stdlib.h>
 #include <stdio.h>
 
-
-
-node * createnode() {
-	node *new_node = calloc(1, sizeof(*new_node)); // create mem for new node
+node *create_node()
+{
+	node *new_node =
+		calloc(1, sizeof(*new_node)); // create mem for new node
 
 	// loop through each char for string and add space for children
 	for (int i = 0; i < NUM_CHARS; ++i) {
@@ -17,56 +26,59 @@ node * createnode() {
 	return new_node;
 }
 
-bool insert_node(node **root, char *string_to_insert) {
+bool insert_node(node **root, char *string_to_insert)
+{
 	// if tree is empty, create new node and make it root
-	if(*root == NULL) {
-		*root = createnode();
+	if (*root == NULL) {
+		*root = create_node();
 	}
 
 	unsigned char *string = (unsigned char *)string_to_insert;
 	node *temp = *root; // temp pointer to root for traversing tree
-	int length =  strlen(string_to_insert); // len of string sent into func
+	int length = strlen(string_to_insert); // len of string sent into func
 
 	for (int i = 0; i < length; i++) {
 		if (temp->children[string[i]] == NULL) {
 			// create new node for letter
-			temp->children[string[i]] = createnode();
+			temp->children[string[i]] = create_node();
 		}
 
 		temp = temp->children[string[i]]; // moves temp to current's child
 	}
 
-	if(temp->end_node) {
+	if (temp->end_node) {
 		return false;
-	}
-	else {
+	} else {
 		temp->end_node = true;
 		return true;
 	}
 }
 
-void print_dictionary_recursive(node * node, unsigned char * prefix, int length) {
-
-	unsigned char new_prefix[length + 2]; // +2 for new char and null terminator
-	memcpy(new_prefix, prefix, length); // copies old prefix to new with new len
+void print_dictionary_recursive(node *node, unsigned char *prefix, int length)
+{
+	unsigned char
+		new_prefix[length + 2]; // +2 for new char and null terminator
+	memcpy(new_prefix, prefix,
+	       length); // copies old prefix to new with new len
 	new_prefix[length + 1] = 0; // null terminates new prefix
 
-	if(node->end_node) {
+	if (node->end_node) {
 		// if terminal, print the actual word
-		printf("Dict word: %s\n", prefix);
+		printf("Word: %s\n", prefix);
 	}
 
 	for (int i = 0; i < NUM_CHARS; i++) {
 		if (node->children[i] != NULL) {
 			new_prefix[length] = i;
-			print_dictionary_recursive(node->children[i], new_prefix, length + 1);
+			print_dictionary_recursive(node->children[i],
+						   new_prefix, length + 1);
 		}
 	}
 }
 
-void print_dictionary(node * root)
+void print_dictionary(node *root)
 {
-	if(root == NULL) {
+	if (root == NULL) {
 		printf("Dictionary is empty!\n");
 		return;
 	}

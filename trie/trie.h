@@ -1,3 +1,12 @@
+/** @file trie.h
+*
+* @brief This module provides declarations for trie.c
+ * Adopted by Jacob Sorber https://www.youtube.com/watch?v=NDfAYZCHstI
+*
+* @par
+* COPYRIGHT NOTICE: (c) 2022 Jacob Hitchcox
+*/
+
 #ifndef TRIE_H
 #define TRIE_H
 
@@ -12,7 +21,7 @@ typedef struct node {
 	bool end_node; // checks if it's the end of a word
 } node;
 
-node *createnode();
+node *create_node();
 
 bool insert_node(node **root, char *string_to_insert);
 
