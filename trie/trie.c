@@ -92,7 +92,7 @@ void trie_print(node *root)
 	print_dictionary_rec(root, NULL, 0);
 }
 
-bool trie_search(node *root, char *signed_text)
+bool trie_search(node *root, const char *signed_text)
 {
 	unsigned char *text = (unsigned char *)signed_text;
 	size_t text_len = strlen(signed_text);

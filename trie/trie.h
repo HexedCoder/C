@@ -23,7 +23,7 @@ node *create_node();
 
 bool insert_node(node **root, char *string_to_insert);
 
-bool trie_search(node *root, char *signed_text);
+bool trie_search(node *root, const char *signed_text);
 
 void trie_print(node *root);
 

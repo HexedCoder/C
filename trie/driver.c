@@ -29,8 +29,15 @@ int main()
 	trie_print(dict_root);
 	puts("");
 
-	node_delete(&dict_root, "zygotes");
-	node_delete(&dict_root, "zap");
+	const char * word_1 = "zygotes";
+	const char * word_2 = "zap";
+
+	printf("zap exists: %d\n", trie_search(dict_root, word_1));
+
+	node_delete(&dict_root, word_1);
+	node_delete(&dict_root, word_2);
+
+	printf("zap exists: %d\n", trie_search(dict_root, word_1));
 
 	trie_print(dict_root);
 
