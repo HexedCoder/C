@@ -1,40 +1,90 @@
+/** @file file_io.c
+*
+* @brief This module implements the functions in file_io.h
+* @par
+* COPYRIGHT NOTICE: (c) 2022 Jacob Hitchcox
+*/
+
 #include "file_io.h"
 
 #include <getopt.h>
 
 bool get_args(int argc, char *argv[])
 {
-	int opt;
-	bool display_holes = false;
+	if (!argc || !argv || !file_name) {
+		return false;
+	}
 
-	while ((opt = getopt(argc, argv, "c")) != -1) {
+	int opt;
+	char * file_name = NULL;
+
+	// Long option implementation adapted from Mead's Guide
+	// https://azrael.digipen.edu/~mmead/www/Courses/CS180/getopt.html
+	int option_index = 0;
+	static struct option long_options[] = {
+		{"prefix", required_argument, NULL, 'p'},
+		{"search", required_argument, NULL, 's'},
+		{"file", required_argument, NULL, 'f'},
+		{"help", no_argument, NULL, 'h'},
+	};
+	while ((opt = getopt_long(argc, argv, "d:f:p:s:h", long_options,
+				  &option_index)) != -1) {
 		switch (opt) {
-		case 'c':
-			printf("Displaying all holes\n");
-			display_holes = true;
+		case 'd':
+			break;
+		case 'f':
+			*file_name = optarg;
+			break;
+		case 'p':
+			break;
+		case 's':
+			break;
+		case 'h':
+		default:	// intentional fall-through
+			printf("Max line size: 255 characters\n");
+			printf("Mandatory Arg:\n");
+			printf("\t-f <arg>: file name to read for inputs\n");
+			printf("Arg Options (must use one):\n");
+			printf("\t-s <arg>: find exact match for arg in "
+			       "radix\n");
+			printf("\t-p <arg>: word prefix to search to print\n");
+			printf("\t-d <arg>: delete arg from list (not "
+			       "implemented)\n");
+			return true;
 		}
 	}
 
-	return display_holes;
+	if (!*file_name) {
+		printf("File name required\n");
+		printf("\t-f <arg>: file name to read for inputs\n");
+		return true;
+	}
+
+	return false;
 }
 
-FILE *open_file(char *file_name, char *method)
+FILE *read_file(char *file_name)
 {
-	FILE *file;
+	if (!file_name) {
+		return NULL;
+	}
 
-	file = fopen(file_name, method);
+	FILE *file = fopen(file_name, "r");
 
 	if (!file) {
-		char diag[64];
-		sprintf(diag, "Fatal - Unable to open '%s'", file_name);
-		perror(diag);
-		return file;
+		perror("Fatal - Unable to open");
+	}
+
+	if (!get_length(file)) {
+		fclose(file);
+		printf("Empty file input\n");
+		file = NULL;
 	}
 
 	return file;
 }
 
-long get_length(FILE *file)
+long get_length(FILE * file)
 {
 	if (!file) {
 		printf("Invalid file input\n");
