@@ -573,19 +573,19 @@ int main(void)
 	puts(section);
 	printf("Create an AVL tree with root node %d\n", 6);
 	delete (&avl);
-	avl = create_node(90);
+	avl = create_node(6);
 	printf("Insert 10, 12, 3, 8, 11, 14, 2, 5, 7, 9, 13, 15, 1, 4, 16, ");
 	printf("30, 25, 22, 29, 38\n");
 
-	int a2[] = { 1, 8, 20, 89, 13, 81, 61, 62, 39, 96, 29, 93 };
+	//	int a2[] = { 1, 8, 20, 89, 13, 81, 61, 62, 39, 96, 29, 93 };
 
 	//Test.
 	puts(section);
-	for (unsigned int i = 0; i < sizeof(a2) / sizeof(int); ++i) {
+	for (unsigned int i = 0; i < sizeof(a) / sizeof(int); ++i) {
 #ifdef DEBUG
 		printf("Inserting node %d\n", i);
 #endif
-		avl_insert(avl, create_node(a2[i]));
+		avl_insert(avl, create_node(a[i]));
 	}
 #ifdef DEBUG
 	printvisual(avl);
