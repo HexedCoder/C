@@ -518,8 +518,6 @@ int tree_delete(avl_t **root, void *val)
 		printf("Search Value Not Found\n");
 		return 0;
 	}
-	printf("Found at %p\n", search_node);
-
 	return delete_node(&ptr->root, &search_node, ptr->compare_func);
 }
 
