@@ -489,8 +489,16 @@ static void delete(node_t **node)
 		return;
 	}
 
+	node_t  * tmp = *node;
+	person * data = tmp->data;
 	delete (&(*node)->left);
 	delete (&(*node)->right);
+
+
+	free(data->ssn);
+	free(data->fname);
+	free(data->lname);
+	free(data);
 	free(*node);
 	*node = NULL;
 }

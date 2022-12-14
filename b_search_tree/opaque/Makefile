@@ -33,7 +33,7 @@ profile: $(BIN)
 
 valgrind: CFLAGS += -g3
 valgrind: $(BIN)
-	valgrind $(VAL_FLAGS) ./$(BIN)
+	valgrind $(VAL_FLAGS) ./$(BIN) input
 
 $(BIN): $(OBJS)
 	$(CC) $(CFLAGS) $^ -o $@ $(LDLIBS)
