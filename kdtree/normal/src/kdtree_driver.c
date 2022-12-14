@@ -32,7 +32,7 @@ typedef struct coordinate {
 	double y_coord;
 } coordinate;
 
-int find_median(FILE *file)
+int find_median(FILE * file)
 {
 	if (!file) {
 		return INT32_MIN;
@@ -76,7 +76,7 @@ int find_median(FILE *file)
 	fseek(file, curr_location, SEEK_SET);
 
 	return 2;
-} /* find_median() */
+}				/* find_median() */
 
 static void print_trunks(struct trunk *p)
 {
@@ -87,7 +87,7 @@ static void print_trunks(struct trunk *p)
 	printf("%s", p->str);
 }
 
-static void print_recursive(tree *root, struct trunk *prev, int is_left)
+static void print_recursive(tree * root, struct trunk *prev, int is_left)
 {
 	if (!root) {
 		return;
@@ -108,8 +108,7 @@ static void print_recursive(tree *root, struct trunk *prev, int is_left)
 	}
 
 	print_trunks(&this_disp);
-	printf("(%lf, %lf) \n", root->x_coord,
-	       root->y_coord); // whatever custom print you need
+	printf("(%lf, %lf) \n", root->x_coord, root->y_coord);	// whatever custom print you need
 
 	if (prev) {
 		prev->str = prev_str;
@@ -122,7 +121,7 @@ static void print_recursive(tree *root, struct trunk *prev, int is_left)
 	}
 }
 
-void print_visual(tree *root)
+void print_visual(tree * root)
 {
 	if (!root) {
 		return;
@@ -130,15 +129,16 @@ void print_visual(tree *root)
 	print_recursive(root, NULL, 0);
 }
 
-void
-node_print(void * value) {
+void node_print(void *value)
+{
 	if (!value) {
 		return;
 	}
 
-	tree * node = (tree *) value;
+	tree *node = (tree *) value;
 
-	printf("(%lf, %lf, %lf)\n", node->x_coord, node->x_coord, node->distance);
+	printf("(%lf, %lf, %lf)\n", node->x_coord, node->x_coord,
+	       node->distance);
 }
 
 int main(int argc, char *argv[])
@@ -152,8 +152,8 @@ int main(int argc, char *argv[])
 	// https://azrael.digipen.edu/~mmead/www/Courses/CS180/getopt.html
 	int option_index = 0;
 	static struct option long_options[] = {
-		{ "x_coord", required_argument, NULL, 'x' },
-		{ "y_coord", required_argument, NULL, 'y' },
+		{"x_coord", required_argument, NULL, 'x'},
+		{"y_coord", required_argument, NULL, 'y'},
 	};
 	while ((opt = getopt_long(argc, argv, "x:y:", long_options,
 				  &option_index)) != -1) {
@@ -210,11 +210,11 @@ int main(int argc, char *argv[])
 		double x_coord = strtod(fields[0], &broken);
 		if (*broken) {
 			if (0 == line_no++) {
-			continue;
+				continue;
 			} else {
-			printf("broken: %d\n", *broken);
-			fprintf(stderr, "%s broke me\n", buffer);
-			exit(1);
+				printf("broken: %d\n", *broken);
+				fprintf(stderr, "%s broke me\n", buffer);
+				exit(1);
 			}
 		}
 		double y_coord = strtod(fields[1], &broken);
@@ -224,14 +224,13 @@ int main(int argc, char *argv[])
 			fprintf(stderr, "%s broke me\n", buffer);
 			exit(1);
 		}
-
-		//		int median = find_median(file);
+		//              int median = find_median(file);
 
 		if (1 == count++) {
 			bst = create_node(x_coord, y_coord);
 
 			if (!bst) {
-			exit(1);
+				exit(1);
 			}
 		} else {
 			bst_insert(bst, create_node(x_coord, y_coord), 0);
@@ -240,7 +239,7 @@ int main(int argc, char *argv[])
 
 	}
 
-	tree * res = search(bst, 1, 5, 0);
+	tree *res = search(bst, 1, 5, 0);
 
 	if (!res) {
 		printf("Node does not exist\n");
@@ -249,13 +248,13 @@ int main(int argc, char *argv[])
 		       res->y_coord);
 	}
 
-	llist_t * tree = llist_create();
+	llist_t *tree = llist_create();
 	res = nearest_neighbor(bst, x_coord, y_coord, 100, 0, NULL);
 
 	printf("\n");
-	llist_print(tree, (void (*)(void *)) node_print);
+	llist_print(tree, (void (*)(void *))node_print);
 
-	printf("Nearest found: (%lf, %lf)\n", res->x_coord,res->y_coord);
+	printf("Nearest found: (%lf, %lf)\n", res->x_coord, res->y_coord);
 
 	fclose(file);
 

@@ -120,7 +120,7 @@ tree *nearest_neighbor(tree *root, double val_1, double val_2, double radius,
 	if (distance <= radius) {
 		printf("Neighbor (%lf, %lf) has distance %lf\n", root->x_coord,
 		       root->y_coord, distance);
-		//		llist_enqueue(list, root);
+		//              llist_enqueue(list, root);
 	} else {
 		printf("Distance (%lf, %lf) too great from (%lf, %lf)\n", val_1,
 		       val_2, root->x_coord, root->y_coord);
@@ -273,6 +273,7 @@ double get_distance(double x_val_1, double y_val_1, double x_val_2,
 
 tree *delete_node(tree **root, int val)
 {
+	val = (int)val;
 	// Return parent of deleted node except:
 	//
 	// 1. if deleted node does not exist then return null
@@ -283,7 +284,6 @@ tree *delete_node(tree **root, int val)
 	if (node == 0) {
 		return *root;
 	}
-
 	// Root node.
 	//
 	// Treat special because root has no parent to relink.
@@ -306,7 +306,6 @@ tree *delete_node(tree **root, int val)
 			return *root;
 		}
 	}
-
 	// Replace deleted node with the minimum of its right branch.
 	//
 	// If missing the right branch then replace with the left branch, treating
@@ -337,6 +336,7 @@ tree *delete_node(tree **root, int val)
 		tmp->parent = node->parent;
 	}
 	x->x_coord = node->x_coord;
+
 	tmp = node->parent;
 	free(node);
 	return tmp;
