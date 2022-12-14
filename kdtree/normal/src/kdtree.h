@@ -29,7 +29,7 @@ void postorder(tree *root);
 
 void inorder(tree *root);
 
-void levelorder(tree *root);
+void level_order(tree *root);
 
 tree *bst_insert(tree *root, tree *node, int method);
 

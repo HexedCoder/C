@@ -183,7 +183,7 @@ void inorder(tree *root)
 	inorder(root->right);
 }
 
-void levelorder(tree *root)
+void level_order(tree *root)
 {
 	if (!root) {
 		return;
@@ -277,11 +277,12 @@ tree *delete_node(tree **root, int val)
 	//
 	// 1. if deleted node does not exist then return null
 	// 2. if deleted node is the root then return new root
-	//    tree *node = search(*root, val);
 	tree *node = NULL;
 	tree *tmp = 0;
-	if (node == 0)
+
+	if (node == 0) {
 		return *root;
+	}
 
 	// Root node.
 	//
@@ -291,14 +292,14 @@ tree *delete_node(tree **root, int val)
 	//
 	// i. no children
 	// ii. one child
-	if (node->parent == 0) {
-		if (node->left == 0 && node->right == 0) {
+	if (!node->parent) {
+		if (!node->left && !node->right) {
 			free(node);
 			*root = 0;
 			return *root;
 		}
-		if (node->left == 0 || node->right == 0) {
-			tmp = (node->left == 0) ? node->right : node->left;
+		if (!node->left || !node->right) {
+			tmp = (!node->left) ? node->right : node->left;
 			tmp->parent = 0;
 			free(node);
 			*root = tmp;

@@ -187,7 +187,6 @@ int main(int argc, char *argv[])
 	const char *file_name = "input";
 	FILE *file = read_file(file_name);
 
-	int ret;
 	int line_no = 0;
 	int count = 1;
 	char buffer[1024];
@@ -236,7 +235,6 @@ int main(int argc, char *argv[])
 			}
 		} else {
 			bst_insert(bst, create_node(x_coord, y_coord), 0);
-			double distance = get_distance(x_coord, y_coord, 0, 0);
 			printf("Node: (%lf, %lf)\n", x_coord, y_coord);
 		}
 
@@ -244,12 +242,12 @@ int main(int argc, char *argv[])
 
 	tree * res = search(bst, 1, 5, 0);
 
-//	if (!res) {
-//		printf("Node does not exist\n");
-//	} else {
-//		printf("Node found: (%lf, %lf)\n\n", res->x_coord,
-//		       res->y_coord);
-//	}
+	if (!res) {
+		printf("Node does not exist\n");
+	} else {
+		printf("Node found: (%lf, %lf)\n\n", res->x_coord,
+		       res->y_coord);
+	}
 
 	llist_t * tree = llist_create();
 	res = nearest_neighbor(bst, x_coord, y_coord, 100, 0, NULL);
