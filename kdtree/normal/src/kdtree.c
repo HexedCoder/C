@@ -1,275 +1,296 @@
+/** @file kdtree_driver.c
+*
+* @brief This module opens supplied file to build a radix of all valid strings
+* found in file. The radix can be printed with -p with a prefix for all words
+* to print. -d allows user to delete a word. -s matches a full word and
+* prints whether the word is in the file
+*
+* @par
+* COPYRIGHT NOTICE: (c) 2022 Jacob Hitchcox
+*/
+
+#include "kdtree_funcs.h"
+#include "file_io.h"
+#include "pqueue.h"
+
+#include <string.h>
 #include <stdlib.h>
-#include <stdio.h>
+#include <stdint-gcc.h>
+#include <getopt.h>
 #include <float.h>
+#include <math.h>
 
-#include "kdtree.h"
-#include "math.h"
-
-typedef struct kd_node_t {
-	struct kd_node_t *next;
-	void *data;
-} kd_node_t;
-
-tree *create_tree_node(double val_1, double val_2)
-{
-	tree *tmp = NULL;
-
-	tmp = calloc(1, sizeof(*tmp));
-	if (tmp) {
-		tmp->left = NULL;
-		tmp->right = NULL;
-		tmp->x_coord = val_1;
-		tmp->y_coord = val_2;
-		tmp->distance = DBL_MAX;
-	}
-
-	return tmp;
-}				/* create_tree_node() */
-
-int kd_insert(tree * root, tree * node, int method)
-{
-	if (!root || !node) {
-		return 0;
-	}
-
-	while (root) {
-		if (0 == method % 2) {
-			if (node->x_coord < root->x_coord) {
-				if (!root->left) {
-					root->left = node;
-					node->parent = root;
-					break;
-				} else {
-					++method;
-					root = root->left;
-				}
-			} else {
-				if (!root->right) {
-					root->right = node;
-					node->parent = root;
-					break;
-				} else {
-					++method;
-					root = root->right;
-				}
-			}
-		} else {
-			if (node->y_coord < root->y_coord) {
-				if (!root->left) {
-					root->left = node;
-					node->parent = root;
-					break;
-				} else {
-					++method;
-					root = root->left;
-				}
-			} else {
-				if (!root->right) {
-					root->right = node;
-					node->parent = root;
-					break;
-				} else {
-					++method;
-					root = root->right;
-				}
-			}
-		}
-	}
-
-	return 1;
-}
-
-tree *search(tree * root, double val_1, double val_2, int method)
-{
-	if (!root) {
-		return NULL;
-	}
-
-	if (0 == method % 2) {
-		if (val_1 < root->x_coord) {
-			return search(root->left, val_1, val_2, ++method);
-		} else if (val_1 > root->x_coord) {
-			return search(root->right, val_1, val_2, ++method);
-		} else {
-			return root;
-		}
-	} else {
-		if (val_2 < root->y_coord) {
-			return search(root->left, val_1, val_2, ++method);
-		} else if (val_2 > root->y_coord) {
-			return search(root->right, val_1, val_2, ++method);
-
-		} else {
-			return root;
-		}
-	}
-}
-
-int nearest_neighbor(tree * root, double val_1, double val_2, double radius,
-		     int method, pqueue_t * list)
-{
-	if (!root) {
-		return 0;
-	}
-
-	double comp_distance = DBL_MAX;
-	double distance =
-	    get_distance(root->x_coord, root->y_coord, val_1, val_2);
-	root->distance = distance;
-
-	if (distance <= radius) {
-		pqueue_insert(list, root, root->distance);
-	}
-
-	if (0 == method % 2) {
-		if (val_1 < root->x_coord) {
-			if (root->right) {
-				comp_distance =
-				    get_distance(root->right->x_coord,
-						 root->right->y_coord, val_1,
-						 val_2);
-
-				if (comp_distance <= distance) {
-					root->right->distance = comp_distance;
-					pqueue_insert(list, root->right,
-						      root->right->distance);
-				}
-			}
-
-			return nearest_neighbor(root->left, val_1, val_2,
-						radius, ++method, list);
-		} else {
-			if (root->left) {
-				comp_distance =
-				    get_distance(root->left->x_coord,
-						 root->left->y_coord, val_1,
-						 val_2);
-
-				if (comp_distance <= distance) {
-					root->left->distance = comp_distance;
-					pqueue_insert(list, root->left,
-						      root->left->distance);
-				}
-			}
-
-			return nearest_neighbor(root->right, val_1, val_2,
-						radius, ++method, list);
-		}
-	} else {
-		if (val_2 < root->y_coord) {
-			if (root->right) {
-				comp_distance =
-				    get_distance(root->right->x_coord,
-						 root->right->y_coord, val_1,
-						 val_2);
-
-				if (comp_distance <= distance) {
-					root->right->distance = comp_distance;
-					pqueue_insert(list, root->right,
-						      root->right->distance);
-				}
-			}
-
-			return nearest_neighbor(root->left, val_1, val_2,
-						radius, ++method, list);
-		} else {
-			if (root->left) {
-				comp_distance =
-				    get_distance(root->left->x_coord,
-						 root->left->y_coord, val_1,
-						 val_2);
-
-				if (comp_distance <= distance) {
-					root->left->distance = comp_distance;
-					pqueue_insert(list, root->left,
-						      root->left->distance);
-				}
-			}
-
-			return nearest_neighbor(root->right, val_1, val_2,
-						radius, ++method, list);
-		}
-	}
-}
-
-void preorder(tree * root)
-{
-	if (!root) {
-		return;
-	}
-
-	printf("(%lf, %lf) ", root->x_coord, root->y_coord);
-	preorder(root->left);
-	preorder(root->right);
-}
-
-void postorder(tree * root)
-{
-	if (!root) {
-		return;
-	}
-
-	postorder(root->left);
-	postorder(root->right);
-	printf("(%lf, %lf) ", root->x_coord, root->y_coord);
-}
-
-void inorder(tree * root)
-{
-	if (!root) {
-		return;
-	}
-
-	inorder(root->left);
-	printf("(%lf, %lf) ", root->x_coord, root->y_coord);
-	inorder(root->right);
-}
-
-int tree_size(tree * tree)
-{
-	if (!tree) {
-		return 0;
-	}
-	int count = tree_size(tree->left);
-	count += tree_size(tree->right);
-
-	return 1 + count;
-}
-
-void print(tree * root)
-{
-	if (!root) {
-		return;
-	}
-
-	print(root->left);
-	printf("(%lf, %lf) ", root->x_coord, root->y_coord);
-	print(root->right);
-}
-
-double get_distance(double x_val_1, double y_val_1, double x_val_2,
-		    double y_val_2)
-{
-	double x_distance = (x_val_2 - x_val_1) * (x_val_2 - x_val_1);
-	double y_distance = (y_val_2 - y_val_1) * (y_val_2 - y_val_1);
-
-	return sqrt(x_distance + y_distance);
-}
-
-void tree_delete(tree ** p_tree)
-{
-	if (!p_tree || !*p_tree) {
-		return;
-	}
-
-	tree_delete(&(*p_tree)->left);
-	tree_delete(&(*p_tree)->right);
-
-	free(*p_tree);
-	*p_tree = NULL;
-}
+#define STARTING_CAP 20
 
 struct trunk {
 	struct trunk *prev;
 	const char *str;
 };
+
+int find_median(FILE * file)
+{
+	if (!file) {
+		return INT32_MIN;
+	}
+	double min = INT32_MAX;
+	double max = INT32_MIN;
+
+	long curr_location = ftell(file);
+	char buffer[1024];
+
+	while (fgets(buffer, 1023, file)) {
+		char *fields[2];
+		char *ptr = buffer;
+
+		for (int i = 0; i < 2; i++) {
+			// save the pointer to the start of the field
+			fields[i] = ptr;
+			// skip to the end of the field
+			ptr += strcspn(ptr, "\t\n");
+			if (*ptr != '\0') {
+				// set a null terminator for the field and skip to the next one
+				*ptr++ = '\0';
+			}
+		}
+
+		double res = strtod(fields[0], NULL);
+
+		if (res > max) {
+			max = res;
+		} else if (res < min) {
+			min = res;
+		}
+
+		if (0 == (int)res) {
+			printf("Invalid argument found: '%s'\n", buffer);
+			fclose(file);
+			exit(1);
+		}
+	}
+
+	fseek(file, curr_location, SEEK_SET);
+
+	return 2;
+}				/* find_median() */
+
+static void print_trunks(struct trunk *p)
+{
+	if (!p) {
+		return;
+	}
+	print_trunks(p->prev);
+	printf("%s", p->str);
+}
+
+static void print_recursive(tree * root, struct trunk *prev, int is_left)
+{
+	if (!root) {
+		return;
+	}
+
+	struct trunk this_disp = { prev, "     " };
+	const char *prev_str = this_disp.str;
+	print_recursive(root->right, &this_disp, 1);
+
+	if (!prev) {
+		this_disp.str = "---";
+	} else if (is_left) {
+		this_disp.str = ".--";
+		prev_str = "    |";
+	} else {
+		this_disp.str = "`--";
+		prev->str = prev_str;
+	}
+
+	print_trunks(&this_disp);
+	printf("(%lf, %lf) \n", root->x_coord, root->y_coord);	// whatever custom print you need
+
+	if (prev) {
+		prev->str = prev_str;
+	}
+	this_disp.str = "    |";
+
+	print_recursive(root->left, &this_disp, 0);
+	if (!prev) {
+		puts("");
+	}
+}
+
+void print_visual(tree * root)
+{
+	if (!root) {
+		return;
+	}
+	print_recursive(root, NULL, 0);
+}
+
+void node_print(void *value)
+{
+	if (!value) {
+		return;
+	}
+
+	tree *node = (tree *) value;
+
+	printf("(%lf, %lf, %lf\n", node->x_coord, node->x_coord,
+	       node->distance);
+}
+
+int main(int argc, char *argv[])
+{
+	int opt;
+	double x_coord = DBL_MAX;
+	double y_coord = DBL_MAX;
+	char *broken = NULL;
+	const char *file_name = "input";
+	int num_neighbors = 1;
+
+	// Long option implementation adapted from Mead's Guide
+	// https://azrael.digipen.edu/~mmead/www/Courses/CS180/getopt.html
+	int option_index = 0;
+	static struct option long_options[] = {
+		{"x_coord", required_argument, NULL, 'x'},
+		{"y_coord", required_argument, NULL, 'y'},
+		{"file", required_argument, NULL, 'f'},
+		{"knn", required_argument, NULL, 'k'},
+		{"help", required_argument, NULL, 'k'},
+	};
+	while ((opt = getopt_long(argc, argv, "x:y:f:k:h", long_options,
+				  &option_index)) != -1) {
+		switch (opt) {
+		case 'x':
+			x_coord = strtod(optarg, &broken);
+			if (*broken) {
+				printf("x: Invalid x_coord provided\n");
+				exit(1);
+			}
+			break;
+		case 'y':
+			y_coord = strtod(optarg, &broken);
+			if (*broken) {
+				printf("y: Invalid y_coord provided\n");
+				exit(1);
+			}
+			break;
+		case 'f':
+			file_name = optarg;
+			break;
+		case 'k':
+			num_neighbors = strtod(optarg, &broken);
+			if (*broken) {
+				printf("K: Invalid integer provided\n");
+				exit(1);
+			}
+			break;
+		case 'h':
+		default:
+			printf
+			    ("Usage ./driver -f input_file -x <x_coord> -y <y_coord>\n");
+			printf
+			    ("\t-f | --file <arg>: file to input (input, by default)\n");
+			printf
+			    ("\t-x | --x_coord <arg>: x-coord between -180 and 180)\n");
+			printf
+			    ("\t-y | --y_coord <arg>: y-coord between -180 and 180)\n");
+			exit(1);
+		}
+	}
+
+	if (fabs(x_coord) > 180 || fabs(y_coord) > 180) {
+		printf("Mandatory Arg:\n");
+		printf
+		    ("\t-x | --x_coord <arg>: x-coord between -180 and 180)\n");
+		printf
+		    ("\t-y | --y_coord <arg>: y-coord between -180 and 180)\n");
+		exit(1);
+	}
+
+	FILE *file = read_file(file_name);
+
+	if (!file) {
+		exit(1);
+	}
+
+	int line_no = 0;
+	int count = 1;
+	char buffer[1024];
+	tree *bst = NULL;
+
+	while (fgets(buffer, 1023, file)) {
+		char *fields[2];
+		char *ptr = buffer;
+
+		for (int i = 0; i < 2; i++) {
+			// save the pointer to the start of the field
+			fields[i] = ptr;
+			// skip to the end of the field
+			ptr += strcspn(ptr, ",\n");
+			if (*ptr != '\0') {
+				// set a null terminator for the field and skip to the next one
+				*ptr++ = '\0';
+			}
+		}
+
+		double tmp_x_coord = strtod(fields[0], &broken);
+		if (*broken) {
+			if (0 == line_no++) {
+				continue;
+			} else {
+				printf("broken: %d\n", *broken);
+				fprintf(stderr, "%s broke me\n", buffer);
+				exit(1);
+			}
+		}
+		double tmp_y_coord = strtod(fields[1], &broken);
+
+		if (*broken) {
+			printf("broken: %d\n", *broken);
+			fprintf(stderr, "%s broke me\n", buffer);
+			exit(1);
+		}
+		//              int median = find_median(file);
+
+		if (1 == count++) {
+			bst = create_tree_node(tmp_x_coord, tmp_y_coord);
+
+			if (!bst) {
+				exit(1);
+			}
+		} else {
+			int ret =
+			    kd_insert(bst,
+				      create_tree_node(tmp_x_coord,
+						       tmp_y_coord),
+				      0);
+			if (!ret) {
+				fprintf(stderr, "Unable to insert into tree\n");
+				fclose(file);
+				tree_delete(&bst);
+				exit(1);
+			}
+		}
+	}
+
+	pqueue_t *queue = pqueue_create(100, NULL);
+
+	if (!queue) {
+		fprintf(stderr, "Unable to allocate memory\n");
+		exit(1);
+	}
+
+	nearest_neighbor(bst, x_coord, y_coord, 1, 0, queue);
+
+	for (int i = 0; i < num_neighbors; ++i) {
+		if (!pqueue_is_empty(queue)) {
+			pqueue_print(queue);
+			pqueue_extract(queue);
+		} else {
+			break;
+		}
+	}
+
+	fclose(file);
+
+	tree_delete(&bst);
+	pqueue_delete(queue);
+}

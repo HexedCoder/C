@@ -12,6 +12,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 
 /**
  * @brief Check cmd line args for program and set variables, if found

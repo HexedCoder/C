@@ -13,6 +13,14 @@ FILE *read_file(const char *file_name)
 		return NULL;
 	}
 
+	struct stat buf;
+	stat(file_name, &buf);
+
+	if (S_ISDIR(buf.st_mode)) {
+		printf("Directory provided\n");
+		return NULL;
+	}
+
 	FILE *file = fopen(file_name, "r");
 
 	if (!file) {

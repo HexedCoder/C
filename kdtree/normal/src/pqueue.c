@@ -1,5 +1,5 @@
 #include "pqueue.h"
-#include "kdtree.h"
+#include "kdtree_funcs.h"
 
 #include <stdio.h>
 #include <stdlib.h>
