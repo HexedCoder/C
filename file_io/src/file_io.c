@@ -9,23 +9,24 @@
 
 #include <getopt.h>
 
-bool get_args(int argc, char *argv[])
+int get_args(int argc, char *argv[])
 {
-	if (!argc || !argv || !file_name) {
+	if (!argc || !argv) {
 		return false;
 	}
 
 	int opt;
 	char *file_name = NULL;
+	const char *msg = NULL;
 
 	// Long option implementation adapted from Mead's Guide
 	// https://azrael.digipen.edu/~mmead/www/Courses/CS180/getopt.html
 	int option_index = 0;
 	static struct option long_options[] = {
-		{"prefix", required_argument, NULL, 'p'},
-		{"search", required_argument, NULL, 's'},
-		{"file", required_argument, NULL, 'f'},
-		{"help", no_argument, NULL, 'h'},
+		{ "prefix", required_argument, NULL, 'p' },
+		{ "search", required_argument, NULL, 's' },
+		{ "file", required_argument, NULL, 'f' },
+		{ "help", no_argument, NULL, 'h' },
 	};
 	while ((opt = getopt_long(argc, argv, "d:f:p:s:h", long_options,
 				  &option_index)) != -1) {
@@ -33,30 +34,32 @@ bool get_args(int argc, char *argv[])
 		case 'd':
 			break;
 		case 'f':
-			*file_name = optarg;
+			file_name = optarg;
 			break;
 		case 'p':
 			break;
 		case 's':
 			break;
 		case 'h':
-		default:	// intentional fall-through
-			printf("Max line size: 255 characters\n");
-			printf("Mandatory Arg:\n");
-			printf("\t-f <arg>: file name to read for inputs\n");
-			printf("Arg Options (must use one):\n");
-			printf("\t-s <arg>: find exact match for arg in "
-			       "radix\n");
-			printf("\t-p <arg>: word prefix to search to print\n");
-			printf("\t-d <arg>: delete arg from list (not "
-			       "implemented)\n");
+		default: // intentional fall-through
+			msg = "Max line size: 255 characters\n"
+			      "Mandatory Arg:\n"
+			      "\t-f | --file <arg>: file name to read for inputs\n"
+			      "Arg Options (must use one):\n"
+			      "\t-s | --search <arg>: find exact match for arg in radix\n"
+			      "\t-p | --prefix <arg>: arg is word prefix to search to print\n"
+			      "\t-d | --delete <arg>: delete arg from list (not implemented)\n";
+
+			printf("%s", msg);
 			return true;
 		}
 	}
 
 	if (!*file_name) {
-		printf("File name required\n");
-		printf("\t-f <arg>: file name to read for inputs\n");
+		msg = "File name required\n"
+		      "\t-f <arg>: file name to read for inputs\n";
+		printf("%s", msg);
+
 		return true;
 	}
 
@@ -84,7 +87,7 @@ FILE *read_file(char *file_name)
 	return file;
 }
 
-long get_length(FILE * file)
+long get_length(FILE *file)
 {
 	if (!file) {
 		printf("Invalid file input\n");
