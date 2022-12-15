@@ -232,23 +232,34 @@ int main(int argc, char *argv[])
 		}
 
 		double tmp_x_coord = strtod(fields[0], &broken);
-		if (*broken) {
+		if (*broken || fields[0] == broken) {
 			if (0 == line_no++) {
 				continue;
 			} else {
 				printf("broken: %d\n", *broken);
 				fprintf(stderr, "%s broke me\n", buffer);
+				fclose(file);
+				tree_delete(&bst);
 				exit(1);
 			}
 		}
 		double tmp_y_coord = strtod(fields[1], &broken);
 
-		if (*broken) {
+		if (*broken || fields[1] == broken) {
 			printf("broken: %d\n", *broken);
 			fprintf(stderr, "%s broke me\n", buffer);
+			fclose(file);
+			tree_delete(&bst);
 			exit(1);
 		}
-		//              int median = find_median(file);
+
+		if (fabs(tmp_x_coord) > 180 || fabs(tmp_y_coord) > 180) {
+			printf("Coordinate must be between -180 and 180 "
+			       "degrees\n");
+			fclose(file);
+			tree_delete(&bst);
+			exit(1);
+		}
 
 		if (1 == count++) {
 			bst = create_tree_node(tmp_x_coord, tmp_y_coord);
@@ -257,11 +268,10 @@ int main(int argc, char *argv[])
 				exit(1);
 			}
 		} else {
-			int ret =
-			    kd_insert(bst,
-				      create_tree_node(tmp_x_coord,
-						       tmp_y_coord),
-				      0);
+			int ret = kd_insert(bst,
+					    create_tree_node(tmp_x_coord,
+							     tmp_y_coord),
+					    0);
 			if (!ret) {
 				fprintf(stderr, "Unable to insert into tree\n");
 				fclose(file);
