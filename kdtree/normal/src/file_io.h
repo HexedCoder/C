@@ -25,8 +25,8 @@
  *
  * @return true on success, NULL on fail
  */
-bool get_args(int argc, char *argv[], char **delete, char **file_name,
-	      char **prefix, char **search);
+int get_args(int argc, char *argv[], char **delete, char **file_name,
+	     char **prefix, char **search);
 
 /**
  * @brief Get length of input file. The function returns the file pointer to

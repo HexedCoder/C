@@ -112,6 +112,7 @@ int nearest_neighbor(tree * root, double val_1, double val_2, double radius,
 		return 0;
 	}
 
+	double comp_distance = DBL_MAX;
 	double distance =
 	    get_distance(root->x_coord, root->y_coord, val_1, val_2);
 	root->distance = distance;
@@ -123,12 +124,13 @@ int nearest_neighbor(tree * root, double val_1, double val_2, double radius,
 	if (0 == method % 2) {
 		if (val_1 < root->x_coord) {
 			if (root->right) {
-				distance = get_distance(root->right->x_coord,
-							root->right->y_coord,
-							val_1, val_2);
+				comp_distance =
+				    get_distance(root->right->x_coord,
+						 root->right->y_coord, val_1,
+						 val_2);
 
-				if (distance <= radius) {
-					root->right->distance = distance;
+				if (comp_distance <= distance) {
+					root->right->distance = comp_distance;
 					pqueue_insert(list, root->right,
 						      root->right->distance);
 				}
@@ -138,12 +140,13 @@ int nearest_neighbor(tree * root, double val_1, double val_2, double radius,
 						radius, ++method, list);
 		} else {
 			if (root->left) {
-				distance = get_distance(root->left->x_coord,
-							root->left->y_coord,
-							val_1, val_2);
+				comp_distance =
+				    get_distance(root->left->x_coord,
+						 root->left->y_coord, val_1,
+						 val_2);
 
-				if (distance <= radius) {
-					root->left->distance = distance;
+				if (comp_distance <= distance) {
+					root->left->distance = comp_distance;
 					pqueue_insert(list, root->left,
 						      root->left->distance);
 				}
@@ -155,12 +158,13 @@ int nearest_neighbor(tree * root, double val_1, double val_2, double radius,
 	} else {
 		if (val_2 < root->y_coord) {
 			if (root->right) {
-				distance = get_distance(root->right->x_coord,
-							root->right->y_coord,
-							val_1, val_2);
+				comp_distance =
+				    get_distance(root->right->x_coord,
+						 root->right->y_coord, val_1,
+						 val_2);
 
-				if (distance <= radius) {
-					root->right->distance = distance;
+				if (comp_distance <= distance) {
+					root->right->distance = comp_distance;
 					pqueue_insert(list, root->right,
 						      root->right->distance);
 				}
@@ -170,12 +174,13 @@ int nearest_neighbor(tree * root, double val_1, double val_2, double radius,
 						radius, ++method, list);
 		} else {
 			if (root->left) {
-				distance = get_distance(root->left->x_coord,
-							root->left->y_coord,
-							val_1, val_2);
+				comp_distance =
+				    get_distance(root->left->x_coord,
+						 root->left->y_coord, val_1,
+						 val_2);
 
-				if (distance <= radius) {
-					root->left->distance = distance;
+				if (comp_distance <= distance) {
+					root->left->distance = comp_distance;
 					pqueue_insert(list, root->left,
 						      root->left->distance);
 				}

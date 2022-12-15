@@ -139,8 +139,8 @@ void node_print(void *value)
 int main(int argc, char *argv[])
 {
 	int opt;
-	double x_coord = 0;
-	double y_coord = 0;
+	double x_coord = DBL_MAX;
+	double y_coord = DBL_MAX;
 	char *broken = NULL;
 	const char *file_name = "input";
 	int num_neighbors = 1;
@@ -153,8 +153,9 @@ int main(int argc, char *argv[])
 		{"y_coord", required_argument, NULL, 'y'},
 		{"file", required_argument, NULL, 'f'},
 		{"knn", required_argument, NULL, 'k'},
+		{"help", required_argument, NULL, 'k'},
 	};
-	while ((opt = getopt_long(argc, argv, "x:y:f:k:", long_options,
+	while ((opt = getopt_long(argc, argv, "x:y:f:k:h", long_options,
 				  &option_index)) != -1) {
 		switch (opt) {
 		case 'x':
@@ -181,16 +182,26 @@ int main(int argc, char *argv[])
 				exit(1);
 			}
 			break;
+		case 'h':
 		default:
-			printf("Unknown operator found\n");
+			printf
+			    ("Usage ./driver -f input_file -x <x_coord> -y <y_coord>\n");
+			printf
+			    ("\t-f | --file <arg>: file to input (input, by default)\n");
+			printf
+			    ("\t-x | --x_coord <arg>: x-coord between -180 and 180)\n");
+			printf
+			    ("\t-y | --y_coord <arg>: y-coord between -180 and 180)\n");
 			exit(1);
 		}
 	}
 
-	if (fabs(x_coord) < DBL_EPSILON || fabs(y_coord) < DBL_EPSILON) {
+	if (fabs(x_coord) > 180 || fabs(y_coord) > 180) {
 		printf("Mandatory Arg:\n");
-		printf("\t-x <arg>: x-coord double not 0\n");
-		printf("\t-y <arg>: y-coord double not 0\n");
+		printf
+		    ("\t-x | --x_coord <arg>: x-coord between -180 and 180)\n");
+		printf
+		    ("\t-y | --y_coord <arg>: y-coord between -180 and 180)\n");
 		exit(1);
 	}
 
@@ -220,7 +231,7 @@ int main(int argc, char *argv[])
 			}
 		}
 
-		double x_coord = strtod(fields[0], &broken);
+		double tmp_x_coord = strtod(fields[0], &broken);
 		if (*broken) {
 			if (0 == line_no++) {
 				continue;
@@ -230,7 +241,7 @@ int main(int argc, char *argv[])
 				exit(1);
 			}
 		}
-		double y_coord = strtod(fields[1], &broken);
+		double tmp_y_coord = strtod(fields[1], &broken);
 
 		if (*broken) {
 			printf("broken: %d\n", *broken);
@@ -240,14 +251,17 @@ int main(int argc, char *argv[])
 		//              int median = find_median(file);
 
 		if (1 == count++) {
-			bst = create_tree_node(x_coord, y_coord);
+			bst = create_tree_node(tmp_x_coord, tmp_y_coord);
 
 			if (!bst) {
 				exit(1);
 			}
 		} else {
-			int ret = kd_insert(bst, create_tree_node(x_coord,
-								  y_coord), 0);
+			int ret =
+			    kd_insert(bst,
+				      create_tree_node(tmp_x_coord,
+						       tmp_y_coord),
+				      0);
 			if (!ret) {
 				fprintf(stderr, "Unable to insert into tree\n");
 				fclose(file);
@@ -255,7 +269,6 @@ int main(int argc, char *argv[])
 				exit(1);
 			}
 		}
-
 	}
 
 	pqueue_t *queue = pqueue_create(100, NULL);
