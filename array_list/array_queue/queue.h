@@ -15,13 +15,12 @@ typedef struct queue_t queue_t;
  */
 queue_t *queue_create(int size);
 
-
 /*
  * @brief Properly disposes of queue_t
  *
  * @param **queue_t Reference to location queue * is stored
  */
-void queue_destroy(queue_t **queue);
+void queue_destroy(queue_t ** queue);
 
 /*
  * @brief Resets queue to empty
@@ -29,7 +28,7 @@ void queue_destroy(queue_t **queue);
  * @param *queue_t Address of queue to reset
  * @return None
  */
-void queue_reset(queue_t *queue);
+void queue_reset(queue_t * queue);
 
 /*
  * @brief Enqueues an 'int' to the queue
@@ -39,7 +38,7 @@ void queue_reset(queue_t *queue);
  *
  * @return *queue_t Address of queue on success, NULL on failure
  */
-queue_t *queue_enqueue(queue_t *queue, int value);
+queue_t *queue_enqueue(queue_t * queue, int value);
 
 /*
  * @brief Recovers next item in queue
@@ -47,7 +46,7 @@ queue_t *queue_enqueue(queue_t *queue, int value);
  * @param *queue_t Address of queue to extract value from
  * @return int Value stored in queue, -1 on failure
  */
-int queue_dequeue(queue_t *queue);
+int queue_dequeue(queue_t * queue);
 
 /*
  * @brief Recovers the head value of the queue
@@ -55,7 +54,7 @@ int queue_dequeue(queue_t *queue);
  * @param *queue_t Address of queue to peek at value of
  * @return int Value stored at head of queue
  */
-int queue_peek(queue_t *queue);
+int queue_peek(queue_t * queue);
 
 /*
  * @brief Modifies the head value of the queue
@@ -65,7 +64,7 @@ int queue_peek(queue_t *queue);
  *
  * @return int Previous value stored in queue, else -1 on failure
  */
-int queue_change_head(queue_t *queue, int value);
+int queue_change_head(queue_t * queue, int value);
 
 /*
  * @brief Evaluates if queue is empty
@@ -74,6 +73,6 @@ int queue_change_head(queue_t *queue, int value);
  * 
  * @return *queue_t Address of queue on success, NULL on failure
  */
-queue_t *queue_is_empty(queue_t *queue);
+queue_t *queue_is_empty(queue_t * queue);
 
 #endif

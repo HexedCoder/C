@@ -16,15 +16,15 @@ typedef void (*action)(void *);
  */
 avl_t *tree_create(compare compare_func, action action_func);
 
-void print_visual(avl_t *root);
+void print_visual(avl_t * root);
 
-void preorder(avl_t *root);
+void preorder(avl_t * root);
 
-void postorder(avl_t *root);
+void postorder(avl_t * root);
 
-void inorder(avl_t *root);
+void inorder(avl_t * root);
 
-void level_order(avl_t *root);
+void level_order(avl_t * root);
 
 /**
  * @brief Adds void* data to linked-list as stack
@@ -34,13 +34,13 @@ void level_order(avl_t *root);
  * @return 1 On success
  * @return 0 On failure
  */
-void *avl_insert(avl_t *root, void *data);
+void *avl_insert(avl_t * root, void *data);
 
 void *tree_search(avl_t *, void *);
 
-void *tree_minimum(avl_t *tree);
+void *tree_minimum(avl_t * tree);
 
-void *tree_maximum(avl_t *tree);
+void *tree_maximum(avl_t * tree);
 
 /**
  * @brief Checks size of linked-list
@@ -48,9 +48,9 @@ void *tree_maximum(avl_t *tree);
  * @param p_llist Linked-list to check
  * @return uint64_t Number of elements in linked-list
  */
-int tree_size(avl_t *tree);
+int tree_size(avl_t * tree);
 
-int tree_delete(avl_t **root, void *val);
+int tree_delete(avl_t ** root, void *val);
 
 /**
  * @brief Function to delete linked-list and free memory
@@ -58,6 +58,6 @@ int tree_delete(avl_t **root, void *val);
  * @param p_llist Linked-list to delete
  * @param destroy_data Function describing how to delete
  */
-void tree_destroy(avl_t **p_tree);
+void tree_destroy(avl_t ** p_tree);
 
 #endif

@@ -6,16 +6,16 @@
 
 void print_num(void *data)
 {
-	printf("%lu ", (uint64_t)data);
+	printf("%lu ", (uint64_t) data);
 }
 
 void print_str(void *data)
 {
-	person *tmp = (person *)data;
+	person *tmp = (person *) data;
 	printf("%s ", tmp->fname);
 }
 
-int person_compare(person *person_1, person *person_2)
+int person_compare(person * person_1, person * person_2)
 {
 	const char *name_1 = person_1->ssn;
 	const char *name_2 = person_2->ssn;
@@ -30,7 +30,7 @@ int person_compare(person *person_1, person *person_2)
 
 int int_cmp(const void *input_1, const void *input_2)
 {
-	return (uint64_t)input_2 - (uint64_t)input_1;
+	return (uint64_t) input_2 - (uint64_t) input_1;
 }
 
 int main(int argc, char *argv[])
@@ -114,7 +114,7 @@ int main(int argc, char *argv[])
 	income = get_age_income(tree, 50, 59);
 	printf("Average Income between 50-59: $%d\n", income);
 
-	//	print_visual(tree);
+	//      print_visual(tree);
 
 	tree_destroy(&tree);
 }

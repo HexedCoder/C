@@ -1,4 +1,4 @@
-.PHONY: all check debug profile clean run
+.PHONY: all check debug profile clean run indent
 
 CFLAGS := -std=c18 -Wall -Wpedantic -Waggregate-return
 CFLAGS += -Wwrite-strings -Wfloat-equal -D_DEFAULT_SOURCE
@@ -29,8 +29,11 @@ debug: $(BIN)
 run: $(BIN)
 	./$(BIN) file.txt
 
-
 check: $(CHECK)
+
+indent:
+	indent -linux ./src/*.c ./src/*.h
+	@rm ./src/*.c~ ./src/*.h~
 
 clean:
 	@rm -rf $(OBJ_DIR) $(BIN) $(CHECK) $(OUTPUT_FILE)

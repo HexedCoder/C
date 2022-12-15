@@ -20,17 +20,17 @@ struct avl_t {
 
 static node_t *create_node(void *data);
 
-static void preorder_action(node_t *node, action action_func);
+static void preorder_action(node_t * node, action action_func);
 
-static void postorder_action(node_t *node, action action_func);
+static void postorder_action(node_t * node, action action_func);
 
-static void inorder_action(node_t *node, action action_func);
+static void inorder_action(node_t * node, action action_func);
 
-static void *get_max(node_t *node);
+static void *get_max(node_t * node);
 
-static void *get_min(node_t *node);
+static void *get_min(node_t * node);
 
-static int get_t_size(node_t *node);
+static int get_t_size(node_t * node);
 
 avl_t *tree_create(compare compare_func, action action_func)
 {
@@ -40,7 +40,7 @@ avl_t *tree_create(compare compare_func, action action_func)
 	tree->action_func = action_func;
 
 	return tree;
-} /* tree_create() */
+}				/* tree_create() */
 
 static node_t *create_node(void *data)
 {
@@ -56,9 +56,9 @@ static node_t *create_node(void *data)
 	}
 
 	return node;
-} /* create_node() */
+}				/* create_node() */
 
-static int get_t_size(node_t *node)
+static int get_t_size(node_t * node)
 {
 	if (!node) {
 		return 0;
@@ -70,7 +70,7 @@ static int get_t_size(node_t *node)
 	return 1 + count;
 }
 
-static node_t *rotate_left(avl_t **root_tree, node_t *new_node)
+static node_t *rotate_left(avl_t ** root_tree, node_t * new_node)
 {
 	avl_t *ptr = *root_tree;
 	node_t **root_node = &ptr->root;
@@ -107,7 +107,7 @@ static node_t *rotate_left(avl_t **root_tree, node_t *new_node)
 	return new_node;
 }
 
-static node_t *rotate_right(avl_t **root_tree, node_t *new_node)
+static node_t *rotate_right(avl_t ** root_tree, node_t * new_node)
 {
 	avl_t *ptr = *root_tree;
 	node_t **root_node = &ptr->root;
@@ -144,7 +144,7 @@ static node_t *rotate_right(avl_t **root_tree, node_t *new_node)
 	return new_node;
 }
 
-static node_t *insert(node_t *tree, void *data, compare compare_func)
+static node_t *insert(node_t * tree, void *data, compare compare_func)
 {
 	int result = compare_func(data, tree->data);
 	if (!result) {
@@ -176,9 +176,9 @@ static node_t *insert(node_t *tree, void *data, compare compare_func)
 	}
 
 	return temp;
-} /* tree_insert() */
+}				/* tree_insert() */
 
-void *avl_insert(avl_t *tree, void *data)
+void *avl_insert(avl_t * tree, void *data)
 {
 	if (!tree || !data) {
 		return NULL;
@@ -219,9 +219,10 @@ void *avl_insert(avl_t *tree, void *data)
 			new_node = rotate_right(&tree, new_node->left);
 			new_node->right->height = new_node->height - 1;
 		} else {
-			new_node = rotate_right(
-				&tree,
-				rotate_left(&tree, new_node->left->right));
+			new_node = rotate_right(&tree,
+						rotate_left(&tree,
+							    new_node->
+							    left->right));
 
 			if (new_node) {
 				new_node->left->height = new_node->height;
@@ -234,9 +235,10 @@ void *avl_insert(avl_t *tree, void *data)
 			new_node = rotate_left(&tree, new_node->right);
 			new_node->left->height = new_node->height - 1;
 		} else {
-			new_node = rotate_left(
-				&tree,
-				rotate_right(&tree, new_node->right->left));
+			new_node = rotate_left(&tree,
+					       rotate_right(&tree,
+							    new_node->
+							    right->left));
 			if (new_node) {
 				new_node->left->height = new_node->height;
 				new_node->right->height = new_node->height;
@@ -248,7 +250,7 @@ void *avl_insert(avl_t *tree, void *data)
 	return data;
 }
 
-static void *find(node_t *node, void *value, compare compare_func)
+static void *find(node_t * node, void *value, compare compare_func)
 {
 	if (!node) {
 		return NULL;
@@ -265,7 +267,7 @@ static void *find(node_t *node, void *value, compare compare_func)
 	}
 }
 
-void *tree_search(avl_t *tree, void *value)
+void *tree_search(avl_t * tree, void *value)
 {
 	if (!tree || !value) {
 		return NULL;
@@ -274,7 +276,7 @@ void *tree_search(avl_t *tree, void *value)
 	return find(tree->root, value, tree->compare_func);
 }
 
-static void preorder_action(node_t *node, action action_func)
+static void preorder_action(node_t * node, action action_func)
 {
 	if (!node) {
 		return;
@@ -285,7 +287,7 @@ static void preorder_action(node_t *node, action action_func)
 	preorder_action(node->right, action_func);
 }
 
-static void postorder_action(node_t *node, action action_func)
+static void postorder_action(node_t * node, action action_func)
 {
 	if (!node) {
 		return;
@@ -296,7 +298,7 @@ static void postorder_action(node_t *node, action action_func)
 	action_func(node->data);
 }
 
-static void inorder_action(node_t *node, action action_func)
+static void inorder_action(node_t * node, action action_func)
 {
 	if (!node) {
 		return;
@@ -307,7 +309,7 @@ static void inorder_action(node_t *node, action action_func)
 	inorder_action(node->right, action_func);
 }
 
-void preorder(avl_t *tree)
+void preorder(avl_t * tree)
 {
 	if (!tree) {
 		return;
@@ -322,7 +324,7 @@ void preorder(avl_t *tree)
 	printf("\n");
 }
 
-void postorder(avl_t *tree)
+void postorder(avl_t * tree)
 {
 	if (!tree) {
 		return;
@@ -337,7 +339,7 @@ void postorder(avl_t *tree)
 	printf("\n");
 }
 
-void inorder(avl_t *tree)
+void inorder(avl_t * tree)
 {
 	if (!tree) {
 		return;
@@ -352,7 +354,7 @@ void inorder(avl_t *tree)
 	printf("\n");
 }
 
-void level_order(avl_t *tree)
+void level_order(avl_t * tree)
 {
 	if (!tree) {
 		return;
@@ -382,7 +384,7 @@ void level_order(avl_t *tree)
 	printf("\n");
 }
 
-static void *get_max(node_t *node)
+static void *get_max(node_t * node)
 {
 	while (node->right) {
 		node = node->right;
@@ -390,7 +392,7 @@ static void *get_max(node_t *node)
 	return node->data;
 }
 
-void *tree_maximum(avl_t *tree)
+void *tree_maximum(avl_t * tree)
 {
 	if (!tree->root) {
 		return NULL;
@@ -399,7 +401,7 @@ void *tree_maximum(avl_t *tree)
 	return get_max(tree->root);
 }
 
-static void *get_min(node_t *node)
+static void *get_min(node_t * node)
 {
 	while (node->left) {
 		node = node->left;
@@ -407,7 +409,7 @@ static void *get_min(node_t *node)
 	return node->data;
 }
 
-void *tree_minimum(avl_t *tree)
+void *tree_minimum(avl_t * tree)
 {
 	if (!tree->root) {
 		return 0;
@@ -416,7 +418,7 @@ void *tree_minimum(avl_t *tree)
 	return get_min(tree->root);
 }
 
-int tree_size(avl_t *tree)
+int tree_size(avl_t * tree)
 {
 	if (!tree) {
 		return 0;
@@ -425,7 +427,7 @@ int tree_size(avl_t *tree)
 	return get_t_size(tree->root);
 }
 
-static void *min_node(node_t *node)
+static void *min_node(node_t * node)
 {
 	while (node->left) {
 		node = node->left;
@@ -433,7 +435,7 @@ static void *min_node(node_t *node)
 	return node;
 }
 
-static int delete_node(node_t **root, node_t **target, compare compare_func)
+static int delete_node(node_t ** root, node_t ** target, compare compare_func)
 {
 	if (!target || !root) {
 		return 0;
@@ -454,15 +456,13 @@ static int delete_node(node_t **root, node_t **target, compare compare_func)
 
 		if (!node->left || !node->right) {
 			node_t *temp = node->left ? node->left : node->right;
-			printf("Temp Node: %s\n",
-			       (char *)temp->data); // How to print data
+			printf("Temp Node: %s\n", (char *)temp->data);	// How to print data
 			temp->parent = NULL;
 			free(*target);
 			*root = temp;
 			return 1;
 		}
 	}
-
 	// Handle if inner node has no right for minimum
 	if (!node->right) {
 		printf("%d Has no right\n", *(int *)node->data);
@@ -481,7 +481,6 @@ static int delete_node(node_t **root, node_t **target, compare compare_func)
 		free(node);
 		return 1;
 	}
-
 	// Standard handling
 	node_t *min = min_node(node->right);
 
@@ -505,7 +504,7 @@ static int delete_node(node_t **root, node_t **target, compare compare_func)
 	return 1;
 }
 
-int tree_delete(avl_t **root, void *val)
+int tree_delete(avl_t ** root, void *val)
 {
 	avl_t *ptr = *root;
 
@@ -521,19 +520,19 @@ int tree_delete(avl_t **root, void *val)
 	return delete_node(&ptr->root, &search_node, ptr->compare_func);
 }
 
-static void delete(node_t **node)
+static void delete(node_t ** node)
 {
 	if (!node || !*node) {
 		return;
 	}
 
-	delete (&(*node)->left);
-	delete (&(*node)->right);
+	delete(&(*node)->left);
+	delete(&(*node)->right);
 	free(*node);
 	*node = NULL;
 }
 
-void tree_destroy(avl_t **p_tree)
+void tree_destroy(avl_t ** p_tree)
 {
 	if (!p_tree || !*p_tree) {
 		return;
@@ -541,7 +540,7 @@ void tree_destroy(avl_t **p_tree)
 
 	avl_t *tmp = *p_tree;
 
-	delete (&tmp->root);
+	delete(&tmp->root);
 	free(*p_tree);
 }
 
@@ -559,7 +558,7 @@ static void print_trunks(struct trunk *p)
 	printf("%s", p->str);
 }
 
-static void print_recursive(node_t *root, struct trunk *prev, int is_left)
+static void print_recursive(node_t * root, struct trunk *prev, int is_left)
 {
 	if (!root) {
 		return;
@@ -580,7 +579,7 @@ static void print_recursive(node_t *root, struct trunk *prev, int is_left)
 	}
 
 	print_trunks(&this_disp);
-	printf("%d\n", *(int *)root->data); // whatever custom print you need
+	printf("%d\n", *(int *)root->data);	// whatever custom print you need
 
 	if (prev) {
 		prev->str = prev_str;
@@ -593,7 +592,7 @@ static void print_recursive(node_t *root, struct trunk *prev, int is_left)
 	}
 }
 
-void print_visual(avl_t *root)
+void print_visual(avl_t * root)
 {
 	if (!root) {
 		return;

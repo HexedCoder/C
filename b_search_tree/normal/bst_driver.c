@@ -21,15 +21,16 @@
 static const int point[TEST_TOTAL] = {
 	2, 1, 1, 1, 1, 1, 2, 3, 3, 17, 2, 1, 1, 4
 };
+
 static int testcount = 0;
 static int pass = 0;
 static int fail = 0;
 static const char *header = "\n------------------------------------------------"
-			    "-------------------------------";
+    "-------------------------------";
 static const char *section = "-----------------------------------section-------"
-			     "------------------------------";
+    "------------------------------";
 static const char *footer = "--------------------------------------------------"
-			    "-----------------------------\n\n";
+    "-----------------------------\n\n";
 
 int *random_array(int n)
 {
@@ -52,7 +53,7 @@ int *random_array(int n)
 	return a;
 }
 
-void test_size(tree *t, int sz)
+void test_size(tree * t, int sz)
 {
 	printf("Is the tree the expected size?\n");
 	if (tree_size(t) == sz) {
@@ -69,7 +70,7 @@ void test_size(tree *t, int sz)
 	}
 }
 
-double test_runtime(tree *t, void (*fp)(void *), double f)
+double test_runtime(tree * t, void (*fp)(void *), double f)
 {
 	struct timeval t1;
 	struct timeval t2;
@@ -88,7 +89,7 @@ double test_runtime(tree *t, void (*fp)(void *), double f)
 	return time;
 }
 
-double test_delete_runtime(tree *t, void (*fp)(tree **), double f)
+double test_delete_runtime(tree * t, void (*fp)(tree **), double f)
 {
 	struct timeval t1;
 	struct timeval t2;
@@ -107,7 +108,7 @@ double test_delete_runtime(tree *t, void (*fp)(tree **), double f)
 	return time;
 }
 
-void verify_node(tree *t, int v)
+void verify_node(tree * t, int v)
 {
 	if (t->data == v) {
 		++pass;
@@ -137,7 +138,7 @@ void report(void)
 	puts(footer);
 }
 
-void signal_handler(int signal, siginfo_t *info, void *context)
+void signal_handler(int signal, siginfo_t * info, void *context)
 {
 	(void)context;
 
@@ -183,7 +184,7 @@ static void print_trunks(struct trunk *p)
 	printf("%s", p->str);
 }
 
-static void print_recursive(tree *root, struct trunk *prev, int is_left)
+static void print_recursive(tree * root, struct trunk *prev, int is_left)
 {
 	if (!root) {
 		return;
@@ -204,7 +205,7 @@ static void print_recursive(tree *root, struct trunk *prev, int is_left)
 	}
 
 	print_trunks(&this_disp);
-	printf("%d\n", root->data); // whatever custom print you need
+	printf("%d\n", root->data);	// whatever custom print you need
 
 	if (prev) {
 		prev->str = prev_str;
@@ -217,7 +218,7 @@ static void print_recursive(tree *root, struct trunk *prev, int is_left)
 	}
 }
 
-void printvisual(tree *root)
+void printvisual(tree * root)
 {
 	if (!root) {
 		return;
@@ -475,8 +476,9 @@ int main(void)
 			printf("\tPASS!\n");
 		} else {
 			++fail;
-			printf("\tFAIL! Node = %d but should have been deleted\n",
-			       node->data);
+			printf
+			    ("\tFAIL! Node = %d but should have been deleted\n",
+			     node->data);
 #ifdef DEBUG
 			print(l);
 #endif
@@ -583,13 +585,13 @@ int main(void)
 	// Test.
 	puts(section);
 	printf("Time to get the size of the tree\n");
-	time = test_runtime(bst, (void (*)(void *)) & tree_size, 0.02);
+	time = test_runtime(bst, (void (*)(void *))&tree_size, 0.02);
 	printf("Time: %f seconds\n", time);
 
 	// Test.
 	puts(section);
 	printf("Time to get maximum\n");
-	time = test_runtime(bst, (void (*)(void *)) & bst_maximum, 0.001);
+	time = test_runtime(bst, (void (*)(void *))&bst_maximum, 0.001);
 	printf("Time: %f seconds\n", time);
 
 	// Test.

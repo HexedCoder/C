@@ -16,7 +16,7 @@ bool get_args(int argc, char *argv[])
 	}
 
 	int opt;
-	char * file_name = NULL;
+	char *file_name = NULL;
 
 	// Long option implementation adapted from Mead's Guide
 	// https://azrael.digipen.edu/~mmead/www/Courses/CS180/getopt.html

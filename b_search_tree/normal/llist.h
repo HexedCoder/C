@@ -16,7 +16,7 @@ typedef struct llist_t llist_t;
  *
  * @return llist_t* On success, NULL on failure
  */
-llist_t * llist_create();
+llist_t *llist_create();
 
 /**
  * @brief Function to delete linked-list and free memory
@@ -34,7 +34,7 @@ void llist_delete(llist_t * p_llist, void (*destroy_data)(void *));
  * @return 1 On success
  * @return 0 On failure
  */
-int llist_push(llist_t * p_llist, void * data);
+int llist_push(llist_t * p_llist, void *data);
 
 /**
  * @brief Removes void* data from linked-list as stack
@@ -43,7 +43,7 @@ int llist_push(llist_t * p_llist, void * data);
  * @return void* On success
  * @return NULL On failure
  */
-void * llist_pop(llist_t * p_llist);
+void *llist_pop(llist_t * p_llist);
 
 /**
  * @brief Adds void* data to linked-list as queue
@@ -53,7 +53,7 @@ void * llist_pop(llist_t * p_llist);
  * @return 1 On success
  * @return 0 On failure
  */
-int llist_enqueue(llist_t * p_llist, void * data);
+int llist_enqueue(llist_t * p_llist, void *data);
 
 /**
  * @brief Removes void* data from linked-list as queue
@@ -62,13 +62,13 @@ int llist_enqueue(llist_t * p_llist, void * data);
  * @return void* On success
  * @return NULL On failure
  */
-void * llist_dequeue(llist_t * p_llist);
+void *llist_dequeue(llist_t * p_llist);
 
-int llist_add_before(llist_t * p_llist, void * target, void * data);
+int llist_add_before(llist_t * p_llist, void *target, void *data);
 
-int llist_add_after(llist_t * p_llist, void * target, void * data);
+int llist_add_after(llist_t * p_llist, void *target, void *data);
 
-void * llist_extract_back(llist_t * p_llist);
+void *llist_extract_back(llist_t * p_llist);
 
 /**
  * @brief Function to print nodes
@@ -85,9 +85,9 @@ void llist_print(llist_t * p_llist, void (*print_data)(void *));
  * @param target void* Value to search for with compare_data
  * @param compare_data Function describing how to compare nodes
  */
-void * llist_find(llist_t * p_llist,
-                  void *    target,
-                  int (*compare_data)(void * initial, void * comparison));
+void *llist_find(llist_t * p_llist,
+		 void *target,
+		 int (*compare_data)(void *initial, void *comparison));
 
 /**
  * @brief Checks size of linked-list
@@ -97,6 +97,6 @@ void * llist_find(llist_t * p_llist,
  */
 uint64_t get_size(llist_t * p_llist);
 
-#endif  /* LLIST_H */
+#endif				/* LLIST_H */
 
 /*** end of file ***/

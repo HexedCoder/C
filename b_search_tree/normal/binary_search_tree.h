@@ -5,41 +5,41 @@
 #define BINARY_SEARCH_TREE_H
 
 struct tree {
-    struct tree *parent;
-    struct tree *left;
-    struct tree *right;
-    int data;
+	struct tree *parent;
+	struct tree *left;
+	struct tree *right;
+	int data;
 };
 typedef struct tree tree;
 
 tree *create_node(int);
 
-void preorder(tree *root);
+void preorder(tree * root);
 
-void postorder(tree *root);
+void postorder(tree * root);
 
-void inorder(tree *root);
+void inorder(tree * root);
 
-void levelorder(tree *root);
+void levelorder(tree * root);
 
-tree *bst_insert(tree *root, tree *node);
+tree *bst_insert(tree * root, tree * node);
 
 tree *search(tree *, int);
 
-int bst_minimum(tree *tree);
+int bst_minimum(tree * tree);
 
-tree *bst_minimum_node(tree *tree);
+tree *bst_minimum_node(tree * tree);
 
-tree *bst_maximum_node(tree *tree);
+tree *bst_maximum_node(tree * tree);
 
-int bst_maximum(tree *tree);
+int bst_maximum(tree * tree);
 
-int tree_size(tree *tree);
+int tree_size(tree * tree);
 
 void print(tree *);
 
 tree *delete_node(tree **, int);
 
-void tree_delete(tree **p_tree);
+void tree_delete(tree ** p_tree);
 
 #endif

@@ -2,11 +2,11 @@
 #define AVL_TREE_H
 
 struct tree {
-    struct tree *parent;
-    struct tree *left;
-    struct tree *right;
-    int data;
-    int height;
+	struct tree *parent;
+	struct tree *left;
+	struct tree *right;
+	int data;
+	int height;
 };
 typedef struct tree tree;
 
@@ -30,7 +30,7 @@ int size(tree *);
 
 void print(tree *);
 
-tree *delete_node(tree **, int); // Regular BST deletion (not AVL)
+tree *delete_node(tree **, int);	// Regular BST deletion (not AVL)
 
 void delete(tree **);
 

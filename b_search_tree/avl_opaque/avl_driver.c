@@ -32,8 +32,8 @@ int main(void)
 {
 	uint64_t arr[] = { 90, 1, 8, 20, 89, 13, 81, 61, 62, 39, 96, 29, 93 };
 	uint64_t arr2[] = { 90, 1, 8, 20, 89, 13, 81, 61, 62, 39, 96, 29, 93 };
-	//	const char *arr[] = { "Kyle",  "Jacob",	  "Chante", "Tim",
-	//			      "Craig", "Sheriff", "Jill",   "Jillian" };
+	//      const char *arr[] = { "Kyle",  "Jacob",   "Chante", "Tim",
+	//                            "Craig", "Sheriff", "Jill",   "Jillian" };
 
 	size_t arr_size = sizeof(arr) / sizeof(arr[0]);
 

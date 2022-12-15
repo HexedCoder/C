@@ -31,7 +31,7 @@ bool get_args(int argc, char *argv[]);
  *
  * @return FILE * pointer to file on success, NULL on fail
  */
-long get_length(FILE *file_name);
+long get_length(FILE * file_name);
 
 /**
  * @brief Get length of input file. The function returns the file pointer to
@@ -43,4 +43,4 @@ long get_length(FILE *file_name);
  */
 FILE *open_file(char *file_name, char *method);
 
-#endif // C_CODES_FILE_IO_H
+#endif				// C_CODES_FILE_IO_H

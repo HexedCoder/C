@@ -34,7 +34,7 @@ static node_t *create_node(void *data)
 
 void llist_delete(llist_t * p_llist, void (*destroy_data)(void *))
 {
-	if(!p_llist) {
+	if (!p_llist) {
 		return;
 	}
 
@@ -249,7 +249,7 @@ void *llist_extract_back(llist_t * p_llist)
 
 void llist_print(llist_t * p_llist, void (*print_data)(void *))
 {
-	if(!p_llist) {
+	if (!p_llist) {
 		return;
 	}
 
@@ -264,7 +264,7 @@ void *llist_find(llist_t * p_llist,
 		 void *target,
 		 int (*compare_data)(void *initial, void *comparison))
 {
-	if(!p_llist || !target) {
+	if (!p_llist || !target) {
 		return NULL;
 	}
 

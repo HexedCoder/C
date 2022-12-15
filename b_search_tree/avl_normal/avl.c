@@ -15,7 +15,7 @@ tree *create_node(int d)
 	return t;
 }
 
-tree *insert(tree *t, tree *i)
+tree *insert(tree * t, tree * i)
 {
 	if (i->data < t->data) {
 		if (t->left == 0) {
@@ -34,7 +34,7 @@ tree *insert(tree *t, tree *i)
 	return insert(n, i);
 }
 
-void avl_insert(tree *t, tree *i)
+void avl_insert(tree * t, tree * i)
 {
 	// Regular binary search tree insertion.
 	tree *n = insert(t, i);
@@ -87,7 +87,7 @@ void avl_insert(tree *t, tree *i)
 	}
 }
 
-tree *search(tree *t, int d)
+tree *search(tree * t, int d)
 {
 	if (t == 0 || t->data == d) {
 		return t;
@@ -96,7 +96,7 @@ tree *search(tree *t, int d)
 	return search(n, d);
 }
 
-tree *minimum(tree *t)
+tree *minimum(tree * t)
 {
 	// Minimum must be in the leftmost path from root to leaf.
 	if (t->left == 0) {
@@ -105,7 +105,7 @@ tree *minimum(tree *t)
 	return minimum(t->left);
 }
 
-tree *maximum(tree *t)
+tree *maximum(tree * t)
 {
 	// Maximum must be in the rightmost path from root to leaf.
 	if (t->right == 0) {
@@ -114,7 +114,7 @@ tree *maximum(tree *t)
 	return maximum(t->right);
 }
 
-tree *rotate_right(tree **t, tree *n)
+tree *rotate_right(tree ** t, tree * n)
 {
 	// Return if node is null or the root, or is not a left child.
 	if (n == 0 || n == *t || n->data > n->parent->data)
@@ -142,7 +142,7 @@ tree *rotate_right(tree **t, tree *n)
 	return n;
 }
 
-tree *rotate_left(tree **t, tree *n)
+tree *rotate_left(tree ** t, tree * n)
 {
 	// Return if node is null or the root, or is not a right child.
 	if (n == 0 || n == *t || n->data < n->parent->data)
@@ -170,7 +170,7 @@ tree *rotate_left(tree **t, tree *n)
 	return n;
 }
 
-int size(tree *t)
+int size(tree * t)
 {
 	int s = 1;
 	if (t == 0) {
@@ -181,7 +181,7 @@ int size(tree *t)
 	return s;
 }
 
-void print(tree *t)
+void print(tree * t)
 {
 	// Pre-order traversal.
 	if (t != 0) {
@@ -199,7 +199,7 @@ void print(tree *t)
 	}
 }
 
-tree *delete_node(tree **t, int d)
+tree *delete_node(tree ** t, int d)
 {
 	// Return parent of deleted node except:
 	//
@@ -232,7 +232,6 @@ tree *delete_node(tree **t, int d)
 			return *t;
 		}
 	}
-
 	// Replace deleted node with the minimum of its right branch.
 	//
 	// If missing the right branch then replace with the left branch, treating
@@ -268,7 +267,7 @@ tree *delete_node(tree **t, int d)
 	return tmp;
 }
 
-void delete(tree **t)
+void delete(tree ** t)
 {
 	if (*t == 0) {
 		return;
@@ -277,11 +276,11 @@ void delete(tree **t)
 	tree *r = (*t)->right;
 	free(*t);
 	*t = (0);
-	delete (&l);
-	delete (&r);
+	delete(&l);
+	delete(&r);
 }
 
-void preorder(tree *t, void (*fn)(tree *))
+void preorder(tree * t, void (*fn)(tree *))
 {
 	if (t == 0)
 		return;
@@ -290,7 +289,7 @@ void preorder(tree *t, void (*fn)(tree *))
 	preorder(t->right, fn);
 }
 
-void postorder(tree *t, void (*fn)(tree *))
+void postorder(tree * t, void (*fn)(tree *))
 {
 	if (t == 0)
 		return;
@@ -299,7 +298,7 @@ void postorder(tree *t, void (*fn)(tree *))
 	fn(t);
 }
 
-void inorder(tree *t, void (*fn)(tree *))
+void inorder(tree * t, void (*fn)(tree *))
 {
 	if (t == 0)
 		return;
@@ -308,7 +307,7 @@ void inorder(tree *t, void (*fn)(tree *))
 	inorder(t->right, fn);
 }
 
-void levelorder(tree *t, void (*fn)(tree *))
+void levelorder(tree * t, void (*fn)(tree *))
 {
 	if (t == 0)
 		return;

@@ -21,6 +21,7 @@
 static const int point[TEST_TOTAL] = {
 	2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2
 };
+
 static int testcount = 0;
 static int pass = 0;
 static int fail = 0;
@@ -33,14 +34,14 @@ struct {
 	tree *on_node;
 } traversal_fail;
 
-void printvisual(tree *root);
+void printvisual(tree * root);
 
 static const char *header =
-	"\n-------------------------------------------------------------------------------";
+    "\n-------------------------------------------------------------------------------";
 static const char *section =
-	"-----------------------------------section-------------------------------------";
+    "-----------------------------------section-------------------------------------";
 static const char *footer =
-	"-------------------------------------------------------------------------------\n\n";
+    "-------------------------------------------------------------------------------\n\n";
 
 int *random_array(int n)
 {
@@ -62,7 +63,7 @@ int *random_array(int n)
 	return a;
 }
 
-void test_size(tree *t, int sz)
+void test_size(tree * t, int sz)
 {
 	printf("Is the tree the expected size?\n");
 	if (size(t) == sz) {
@@ -79,7 +80,7 @@ void test_size(tree *t, int sz)
 	}
 }
 
-void test_traversal(tree *t, void (*fp)(tree *, void (*)(tree *)),
+void test_traversal(tree * t, void (*fp)(tree *, void (*)(tree *)),
 		    void (*tp)(tree *), int size)
 {
 	traversal_step = 0;
@@ -91,21 +92,23 @@ void test_traversal(tree *t, void (*fp)(tree *, void (*)(tree *)),
 	if (traversal_fail.error_flag == 0) {
 		if (traversal_step < size) {
 			++fail;
-			printf("\tFAIL! Traversal halted early on step %d instead of %d\n",
-			       traversal_step, size);
+			printf
+			    ("\tFAIL! Traversal halted early on step %d instead of %d\n",
+			     traversal_step, size);
 		} else {
 			++pass;
 			printf("\tPASS!\n");
 		}
 	} else {
 		++fail;
-		printf("\tFAIL! Traversal failed on step %d: Found node %d instead of %d\n",
-		       traversal_fail.on_step, traversal_fail.on_node->data,
-		       traversal_fail.on_key);
+		printf
+		    ("\tFAIL! Traversal failed on step %d: Found node %d instead of %d\n",
+		     traversal_fail.on_step, traversal_fail.on_node->data,
+		     traversal_fail.on_key);
 	}
 }
 
-double test_traversal_runtime(tree *t, void (*fp)(tree *, void (*)(tree *)),
+double test_traversal_runtime(tree * t, void (*fp)(tree *, void (*)(tree *)),
 			      void (*tp)(tree *), double f)
 {
 	struct timeval t1;
@@ -125,7 +128,7 @@ double test_traversal_runtime(tree *t, void (*fp)(tree *, void (*)(tree *)),
 	return time;
 }
 
-double test_delete_runtime(tree *t, void (*fp)(tree **), double f)
+double test_delete_runtime(tree * t, void (*fp)(tree **), double f)
 {
 	struct timeval t1;
 	struct timeval t2;
@@ -144,7 +147,7 @@ double test_delete_runtime(tree *t, void (*fp)(tree **), double f)
 	return time;
 }
 
-void verify_node(tree *t, int v)
+void verify_node(tree * t, int v)
 {
 	if (t->data == v) {
 		++pass;
@@ -158,7 +161,7 @@ void verify_node(tree *t, int v)
 	}
 }
 
-void verify_traversal(tree *t)
+void verify_traversal(tree * t)
 {
 	if (t->data != traversal_sequence[traversal_step]) {
 		traversal_fail.error_flag = 1;
@@ -169,12 +172,12 @@ void verify_traversal(tree *t)
 	++traversal_step;
 }
 
-void noop(tree *t)
+void noop(tree * t)
 {
 	(void)t;
 }
 
-void verify_balance(tree *t)
+void verify_balance(tree * t)
 {
 	while (t->parent != 0) {
 		int lh = (t->left) ? t->left->height : 0;
@@ -210,7 +213,7 @@ void report(void)
 	puts(footer);
 }
 
-void signal_handler(int signal, siginfo_t *info, void *context)
+void signal_handler(int signal, siginfo_t * info, void *context)
 {
 	(void)context;
 	puts(header);
@@ -255,7 +258,7 @@ static void print_trunks(struct trunk *p)
 	printf("%s", p->str);
 }
 
-static void print_recursive(tree *root, struct trunk *prev, int is_left)
+static void print_recursive(tree * root, struct trunk *prev, int is_left)
 {
 	if (!root) {
 		return;
@@ -276,7 +279,7 @@ static void print_recursive(tree *root, struct trunk *prev, int is_left)
 	}
 
 	print_trunks(&this_disp);
-	printf("%d\n", root->data); // whatever custom printvisual you need
+	printf("%d\n", root->data);	// whatever custom printvisual you need
 
 	if (prev) {
 		prev->str = prev_str;
@@ -289,7 +292,7 @@ static void print_recursive(tree *root, struct trunk *prev, int is_left)
 	}
 }
 
-void printvisual(tree *root)
+void printvisual(tree * root)
 {
 	if (!root) {
 		return;
@@ -316,10 +319,12 @@ int main(void)
 
 	//Declarations specific to this exercise.
 	const int BIGN = 100000;
-	int a[] = { 10, 12, 3, 8, 11, 14, 2,  5,  7,  9,
-		    13, 15, 1, 4, 16, 30, 25, 22, 29, 38 };
-	int inorder_sequence[] = { 1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11,
-				   12, 13, 14, 15, 16, 22, 25, 29, 30, 38 };
+	int a[] = { 10, 12, 3, 8, 11, 14, 2, 5, 7, 9,
+		13, 15, 1, 4, 16, 30, 25, 22, 29, 38
+	};
+	int inorder_sequence[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,
+		12, 13, 14, 15, 16, 22, 25, 29, 30, 38
+	};
 	int sz = 0;
 	int tree_size = 0;
 
@@ -364,7 +369,8 @@ int main(void)
 	test_size(avl, sz);
 
 	//Verify BST property.
-	printf("Is BST property preserved? (verifying with inorder traversal)\n");
+	printf
+	    ("Is BST property preserved? (verifying with inorder traversal)\n");
 	traversal_sequence = &inorder_sequence[0];
 	tree_size = sizeof(inorder_sequence) / sizeof(int);
 	test_traversal(avl, &inorder, &verify_traversal, tree_size);
@@ -380,7 +386,8 @@ int main(void)
 	rotate_right(&avl, search(avl, 8));
 
 	//Verify BST property.
-	printf("Is BST property preserved? (verifying with inorder traversal)\n");
+	printf
+	    ("Is BST property preserved? (verifying with inorder traversal)\n");
 	traversal_sequence = &inorder_sequence[0];
 	tree_size = sizeof(inorder_sequence) / sizeof(int);
 	test_traversal(avl, &inorder, &verify_traversal, tree_size);
@@ -396,7 +403,8 @@ int main(void)
 	rotate_left(&avl, search(avl, 5));
 
 	//Verify BST property.
-	printf("Is BST property preserved? (verifying with inorder traversal)\n");
+	printf
+	    ("Is BST property preserved? (verifying with inorder traversal)\n");
 	traversal_sequence = &inorder_sequence[0];
 	tree_size = sizeof(inorder_sequence) / sizeof(int);
 	test_traversal(avl, &inorder, &verify_traversal, tree_size);
@@ -412,7 +420,8 @@ int main(void)
 	rotate_right(&avl, search(avl, 5));
 
 	//Verify BST property.
-	printf("Is BST property preserved? (verifying with inorder traversal)\n");
+	printf
+	    ("Is BST property preserved? (verifying with inorder traversal)\n");
 	traversal_sequence = &inorder_sequence[0];
 	tree_size = sizeof(inorder_sequence) / sizeof(int);
 	test_traversal(avl, &inorder, &verify_traversal, tree_size);
@@ -431,7 +440,8 @@ int main(void)
 #endif
 
 	//Verify BST property.
-	printf("Is BST property preserved? (verifying with inorder traversal)\n");
+	printf
+	    ("Is BST property preserved? (verifying with inorder traversal)\n");
 	traversal_sequence = &inorder_sequence[0];
 	tree_size = sizeof(inorder_sequence) / sizeof(int);
 	test_traversal(avl, &inorder, &verify_traversal, tree_size);
@@ -450,7 +460,8 @@ int main(void)
 #endif
 
 	//Verify BST property.
-	printf("Is BST property preserved? (verifying with inorder traversal)\n");
+	printf
+	    ("Is BST property preserved? (verifying with inorder traversal)\n");
 	traversal_sequence = &inorder_sequence[0];
 	tree_size = sizeof(inorder_sequence) / sizeof(int);
 	test_traversal(avl, &inorder, &verify_traversal, tree_size);
@@ -469,7 +480,8 @@ int main(void)
 #endif
 
 	//Verify BST property.
-	printf("Is BST property preserved? (verifying with inorder traversal)\n");
+	printf
+	    ("Is BST property preserved? (verifying with inorder traversal)\n");
 	traversal_sequence = &inorder_sequence[0];
 	tree_size = sizeof(inorder_sequence) / sizeof(int);
 	test_traversal(avl, &inorder, &verify_traversal, tree_size);
@@ -488,7 +500,8 @@ int main(void)
 #endif
 
 	//Verify BST property.
-	printf("Is BST property preserved? (verifying with inorder traversal)\n");
+	printf
+	    ("Is BST property preserved? (verifying with inorder traversal)\n");
 	traversal_sequence = &inorder_sequence[0];
 	tree_size = sizeof(inorder_sequence) / sizeof(int);
 	test_traversal(avl, &inorder, &verify_traversal, tree_size);
@@ -507,7 +520,8 @@ int main(void)
 #endif
 
 	//Verify BST property.
-	printf("Is BST property preserved? (verifying with inorder traversal)\n");
+	printf
+	    ("Is BST property preserved? (verifying with inorder traversal)\n");
 	traversal_sequence = &inorder_sequence[0];
 	tree_size = sizeof(inorder_sequence) / sizeof(int);
 	test_traversal(avl, &inorder, &verify_traversal, tree_size);
@@ -520,7 +534,7 @@ int main(void)
 
 	//Test.
 	puts(section);
-	delete (&avl);
+	delete(&avl);
 
 	//Verify size of tree.
 	test_size(avl, 0);
@@ -572,12 +586,12 @@ int main(void)
 	//Test.
 	puts(section);
 	printf("Create an AVL tree with root node %d\n", 6);
-	delete (&avl);
+	delete(&avl);
 	avl = create_node(6);
 	printf("Insert 10, 12, 3, 8, 11, 14, 2, 5, 7, 9, 13, 15, 1, 4, 16, ");
 	printf("30, 25, 22, 29, 38\n");
 
-	//	int a2[] = { 1, 8, 20, 89, 13, 81, 61, 62, 39, 96, 29, 93 };
+	//      int a2[] = { 1, 8, 20, 89, 13, 81, 61, 62, 39, 96, 29, 93 };
 
 	//Test.
 	puts(section);
@@ -598,11 +612,12 @@ int main(void)
 	verify_balance(avl);
 
 	//Verify BST property.
-	printf("Is BST property preserved? (verifying with inorder traversal)\n");
+	printf
+	    ("Is BST property preserved? (verifying with inorder traversal)\n");
 	traversal_sequence = &inorder_sequence[0];
 	tree_size = sizeof(inorder_sequence) / sizeof(int);
 	test_traversal(avl, &inorder, &verify_traversal, tree_size);
-	delete (&avl);
+	delete(&avl);
 	puts(footer);
 
 	//New test.
