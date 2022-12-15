@@ -17,14 +17,6 @@ typedef struct pqueue_node {
 	double priority;
 } node_t;
 
-struct pqueue_t {
-	del_f delete;
-	uint16_t count;
-	uint16_t capacity;
-	node_t *back;
-	node_t *heap;
-};
-
 /**
 * @brief Struct that defines pointer to minimum-node and
 *        del_f that knows how to delete custom void*

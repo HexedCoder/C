@@ -4,12 +4,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-// Used after insertion to organize queue
-//
+struct pqueue_t {
+	del_f delete;
+	uint16_t count;
+	uint16_t capacity;
+	node_t *back;
+	node_t *heap;
+};
+
 static void heapify_up(uint16_t position, node_t * heap);
 
-// Used after extraction to reorganize queue
-//
 static void heapify_down(uint16_t position, uint16_t size, node_t * heap);
 
 pqueue_t *pqueue_create(uint16_t capacity, del_f delete)
@@ -21,8 +25,7 @@ pqueue_t *pqueue_create(uint16_t capacity, del_f delete)
 
 	pqueue->heap = calloc(capacity, sizeof(node_t));
 	if (!pqueue->heap) {
-		fprintf(stderr,
-			"[!]ERR: Could not create heap. Try smaller capacity");
+		fprintf(stderr, "Try smaller capacity");
 		free(pqueue);
 		return NULL;
 	}
@@ -38,7 +41,7 @@ pqueue_t *pqueue_create(uint16_t capacity, del_f delete)
 void pqueue_delete(pqueue_t * pqueue)
 {
 	if (!pqueue) {
-		fprintf(stderr, "Could not destroy queue");
+		fprintf(stderr, "Could not destroy queue\n");
 		return;
 	}
 
@@ -96,8 +99,6 @@ int pqueue_insert(pqueue_t * pqueue, void *item, double priority)
 
 }				/* pqueue_insert() */
 
-// Used after extraction to reorganize queue
-//
 static void heapify_down(uint16_t position, uint16_t size, node_t * heap)
 {
 	uint16_t left_child = 2 * position + 1;
@@ -128,7 +129,7 @@ void *pqueue_extract(pqueue_t * pqueue)
 	void *temp;
 	{
 		if (pqueue_is_empty(pqueue)) {
-			fprintf(stderr, "Extraction failed, queue is empty");
+			fprintf(stderr, "Queue is empty\n");
 		}
 
 		temp = pqueue->heap[0].node_data;

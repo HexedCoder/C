@@ -42,7 +42,7 @@ profile: $(BIN)
 
 valgrind: CFLAGS += -g3
 valgrind: $(BIN)
-	valgrind $(VAL_FLAGS) ./$(BIN) -x 46.195469 -y -119.27 -f
+	valgrind $(VAL_FLAGS) ./$(BIN)  -x 18.334138 -y -66.066365 -k 3
 
 $(OBJ_DIR):
 	@mkdir -p $@

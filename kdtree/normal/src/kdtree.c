@@ -3,7 +3,6 @@
 #include <float.h>
 
 #include "kdtree.h"
-#include "llist.h"
 #include "math.h"
 
 typedef struct kd_node_t {

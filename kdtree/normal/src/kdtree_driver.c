@@ -265,7 +265,7 @@ int main(int argc, char *argv[])
 		exit(1);
 	}
 
-	nearest_neighbor(bst, x_coord, y_coord, 100, 0, queue);
+	nearest_neighbor(bst, x_coord, y_coord, 1, 0, queue);
 
 	for (int i = 0; i < num_neighbors; ++i) {
 		if (!pqueue_is_empty(queue)) {
