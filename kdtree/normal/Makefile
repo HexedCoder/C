@@ -29,8 +29,8 @@ debug: $(BIN)
 check: $(CHECK)
 
 indent:
-	indent -linux ./src/*.c ./src/*.h
-	@rm ./src/*.c~ ./src/*.h~
+	indent -linux ./src/*.c ./src/*.h ./test/*.c
+	@rm ./src/*.c~ ./src/*.h~ ./test/*.c~
 
 run: $(BIN)
 	./$(BIN) -x 18.334138 -y -66.066365 -k 3

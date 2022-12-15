@@ -44,10 +44,10 @@ START_TEST(test_valid_kdtree_ops)
 
 END_TEST START_TEST(test_invalid_kdtree_ops)
 {
-	char *invalid_string = "test/sample_empty_input";
+	const char *invalid_string = "test/sample_empty_input";
 	ck_assert(read_file(invalid_string) == NULL);
 
-	char *invalid_string2 = "test/sample_invalid_input5";
+	const char *invalid_string2 = "test/sample_invalid_input5";
 	FILE *file = read_file(invalid_string2);
 
 	char buffer[MAX_LINE_LENGTH] = { 0 };
@@ -106,9 +106,10 @@ END_TEST START_TEST(test_invalid_kdtree_ops)
 				break;
 			}
 		} else {
-			ret = kd_insert(
-				bst, create_tree_node(tmp_x_coord, tmp_y_coord),
-				0);
+			ret =
+			    kd_insert(bst,
+				      create_tree_node(tmp_x_coord,
+						       tmp_y_coord), 0);
 			if (!ret) {
 				fprintf(stderr, "Unable to insert into tree\n");
 				fclose(file);
