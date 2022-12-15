@@ -27,7 +27,7 @@ debug: CFLAGS += -g3
 debug: $(BIN)
 
 run: $(BIN)
-	./$(BIN) file.txt
+	./$(BIN)
 
 check: $(CHECK)
 
@@ -44,7 +44,7 @@ profile: $(BIN)
 
 valgrind: CFLAGS += -g3
 valgrind: $(BIN)
-	valgrind $(VAL_FLAGS) ./$(BIN)	file.txt
+	valgrind $(VAL_FLAGS) ./$(BIN)
 
 $(OBJ_DIR):
 	@mkdir -p $@
@@ -62,4 +62,4 @@ $(BIN): $(OBJS)
 
 $(CHECK): $(TST_OBJS)
 	$(CC) $(CFLAGS) $^ -o $@ $(TST_LIBS)
-	./$(CHECK) file.txt
+	./$(CHECK)

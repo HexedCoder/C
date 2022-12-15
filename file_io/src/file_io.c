@@ -12,7 +12,7 @@
 int get_args(int argc, char *argv[])
 {
 	if (!argc || !argv) {
-		return false;
+		return 0;
 	}
 
 	int opt;
@@ -51,7 +51,7 @@ int get_args(int argc, char *argv[])
 			    "\t-d | --delete <arg>: delete arg from list (not implemented)\n";
 
 			printf("%s", msg);
-			return true;
+			return 1;
 		}
 	}
 
@@ -60,10 +60,10 @@ int get_args(int argc, char *argv[])
 		    "\t-f <arg>: file name to read for inputs\n";
 		printf("%s", msg);
 
-		return true;
+		return 1;
 	}
 
-	return false;
+	return 0;
 }
 
 FILE *read_file(char *file_name)
