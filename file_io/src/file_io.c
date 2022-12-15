@@ -23,10 +23,10 @@ int get_args(int argc, char *argv[])
 	// https://azrael.digipen.edu/~mmead/www/Courses/CS180/getopt.html
 	int option_index = 0;
 	static struct option long_options[] = {
-		{ "prefix", required_argument, NULL, 'p' },
-		{ "search", required_argument, NULL, 's' },
-		{ "file", required_argument, NULL, 'f' },
-		{ "help", no_argument, NULL, 'h' },
+		{"prefix", required_argument, NULL, 'p'},
+		{"search", required_argument, NULL, 's'},
+		{"file", required_argument, NULL, 'f'},
+		{"help", no_argument, NULL, 'h'},
 	};
 	while ((opt = getopt_long(argc, argv, "d:f:p:s:h", long_options,
 				  &option_index)) != -1) {
@@ -41,14 +41,14 @@ int get_args(int argc, char *argv[])
 		case 's':
 			break;
 		case 'h':
-		default: // intentional fall-through
+		default:	// intentional fall-through
 			msg = "Max line size: 255 characters\n"
-			      "Mandatory Arg:\n"
-			      "\t-f | --file <arg>: file name to read for inputs\n"
-			      "Arg Options (must use one):\n"
-			      "\t-s | --search <arg>: find exact match for arg in radix\n"
-			      "\t-p | --prefix <arg>: arg is word prefix to search to print\n"
-			      "\t-d | --delete <arg>: delete arg from list (not implemented)\n";
+			    "Mandatory Arg:\n"
+			    "\t-f | --file <arg>: file name to read for inputs\n"
+			    "Arg Options (must use one):\n"
+			    "\t-s | --search <arg>: find exact match for arg in radix\n"
+			    "\t-p | --prefix <arg>: arg is word prefix to search to print\n"
+			    "\t-d | --delete <arg>: delete arg from list (not implemented)\n";
 
 			printf("%s", msg);
 			return true;
@@ -57,7 +57,7 @@ int get_args(int argc, char *argv[])
 
 	if (!*file_name) {
 		msg = "File name required\n"
-		      "\t-f <arg>: file name to read for inputs\n";
+		    "\t-f <arg>: file name to read for inputs\n";
 		printf("%s", msg);
 
 		return true;
@@ -69,6 +69,14 @@ int get_args(int argc, char *argv[])
 FILE *read_file(char *file_name)
 {
 	if (!file_name) {
+		return NULL;
+	}
+
+	struct stat buf;
+	stat(file_name, &buf);
+
+	if (S_ISDIR(buf.st_mode)) {
+		printf("Directory provided\n");
 		return NULL;
 	}
 
@@ -87,7 +95,7 @@ FILE *read_file(char *file_name)
 	return file;
 }
 
-long get_length(FILE *file)
+long get_length(FILE * file)
 {
 	if (!file) {
 		printf("Invalid file input\n");
