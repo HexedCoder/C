@@ -1,16 +1,16 @@
 /** @file pqueue.h
-* @brief minimum priority queue (min-queue) library for void*
+* @brief min-queue library for to implement pqueue.c
 */
 #ifndef PQUEUE_H
 #define PQUEUE_H
 
 #include <stdbool.h>
-#include <stdint.h>
 
 /**
-* @brief User provided function to delete void* without memory leaks
+* @brief User-defined delete function
 */
-typedef void (*del_f)(void *data);
+typedef void (*delete_func)(void *data);
+typedef struct pqueue_t pqueue_t;
 
 typedef struct pqueue_node {
 	void *node_data;
@@ -18,67 +18,61 @@ typedef struct pqueue_node {
 } node_t;
 
 /**
-* @brief Struct that defines pointer to minimum-node and
-*        del_f that knows how to delete custom void*
-*/
-typedef struct pqueue_t pqueue_t;
-
-/**
 * @brief Creates a priority queue
 *
-* Provides user with the option of a custom delete function pending what
-* datatype is stored within the queue.
+* Provides interface for user to define their own free functions
 *
-* The purpose of this option, is so the library does not need to know
-* anything about the user defined data structure to successfully delete
-*
-* @param capacity Maximum amount of elements that can be held in queue
-* @param delete Function to delete void*. Pass NULL if not wanted
+* @param capacity Maximum size of queue
+* @param delete Function to define proper memory free
 * @return pqueue_t* On success, NULL on failure
 */
-pqueue_t *pqueue_create(uint16_t capacity, del_f delete);
+pqueue_t *pqueue_create(int capacity, delete_func delete);
 
 /**
-* @brief Deletes a priority queue, freeing resources used and
-*        deleting any remaining items without warning
+* @brief Destroys a priority queue
 *
-* @param pqueue The queue to delete
+* @param pqueue pqueue to be deleted
 */
-void pqueue_delete(pqueue_t * pqueue);
+void pqueue_destroy(pqueue_t * pqueue);
 
 /**
 * @brief Inserts void* of a specified priority into min-queue
 *
-* @param pqueue Priority queue to query
+* @param pqueue Priority queue insert item into
 * @param item Void* element to insert
-* @param priority Item's priority (0-4,294,967,295) where 0 is top priority
+* @param priority the weight of the item being entered
 */
 int pqueue_insert(pqueue_t * pqueue, void *item, double priority);
 
 /**
-* @brief Removes and returns the lowest-priority value from the queue
+* @brief Removes and returns the lowest value from pqueue
 *
-* @param pqueue Target priority queue
-* @return Address of stored item
+* @param pqueue pqueue to extract form
+* @return Address of stored item or NULL on empty pqueue
 */
 void *pqueue_extract(pqueue_t * pqueue);
 
 /**
 * @brief Used to determine if pqueue_t is empty
 *
-* @param pqueue A priority queue
-* @return True on empty, else False
+* @param pqueue priority queue to check for size
+* @return 1 on empty, else 0
 */
-bool pqueue_is_empty(pqueue_t * pqueue);
+int pqueue_is_empty(pqueue_t * pqueue);
 
 /**
 * @brief Used to determine if pqueue_t is full
 *
-* @param pqueue A priority queue
+* @param pqueue priority queue to check for size
 * @return True on full, else False
 */
 bool pqueue_is_full(pqueue_t * pqueue);
 
+/**
+* @brief Used to print elements in pqueue
+*
+* @param pqueue priority queue to print first value
+*/
 void pqueue_print(pqueue_t * pqueue);
 
 #endif				/* PQUEUE_H */

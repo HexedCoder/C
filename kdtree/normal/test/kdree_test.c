@@ -13,7 +13,7 @@
 
 #define MAX_LINE_LENGTH 1024
 
-int get_data(FILE *file)
+int get_data(FILE * file)
 {
 	int line_no = 0;
 	int count = 1;
@@ -71,9 +71,10 @@ int get_data(FILE *file)
 				return 1;
 			}
 		} else {
-			int ret = kd_insert(
-				bst, create_tree_node(tmp_x_coord, tmp_y_coord),
-				0);
+			int ret = kd_insert(bst,
+					    create_tree_node(tmp_x_coord,
+							     tmp_y_coord),
+					    0);
 			if (!ret) {
 				fprintf(stderr, "Unable to insert into tree\n");
 				fclose(file);

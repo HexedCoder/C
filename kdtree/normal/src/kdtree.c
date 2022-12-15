@@ -284,7 +284,6 @@ int main(int argc, char *argv[])
 	pqueue_t *queue = pqueue_create(100, NULL);
 
 	if (!queue) {
-		fprintf(stderr, "Unable to allocate memory\n");
 		exit(1);
 	}
 
@@ -302,5 +301,5 @@ int main(int argc, char *argv[])
 	fclose(file);
 
 	tree_delete(&bst);
-	pqueue_delete(queue);
+	pqueue_destroy(queue);
 }
