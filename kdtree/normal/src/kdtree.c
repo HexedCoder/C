@@ -25,9 +25,9 @@ tree *create_tree_node(double val_1, double val_2)
 	}
 
 	return tmp;
-} /* create_tree_node() */
+}				/* create_tree_node() */
 
-int kd_insert(tree *root, tree *node, int method)
+int kd_insert(tree * root, tree * node, int method)
 {
 	if (!root || !node) {
 		return 0;
@@ -80,7 +80,7 @@ int kd_insert(tree *root, tree *node, int method)
 	return 1;
 }
 
-tree *search(tree *root, double val_1, double val_2, int method)
+tree *search(tree * root, double val_1, double val_2, int method)
 {
 	if (!root) {
 		return NULL;
@@ -106,51 +106,89 @@ tree *search(tree *root, double val_1, double val_2, int method)
 	}
 }
 
-tree *nearest_neighbor(tree *root, double val_1, double val_2, double radius,
-		       int method, pqueue_t *list)
+int nearest_neighbor(tree * root, double val_1, double val_2, double radius,
+		     int method, pqueue_t * list)
 {
 	if (!root) {
-		return NULL;
+		return 0;
 	}
 
 	double distance =
-		get_distance(root->x_coord, root->y_coord, val_1, val_2);
+	    get_distance(root->x_coord, root->y_coord, val_1, val_2);
 	root->distance = distance;
 
 	if (distance <= radius) {
-		printf("Neighbor (%lf, %lf) has distance %lf\n", root->x_coord,
-		       root->y_coord, distance);
 		pqueue_insert(list, root, root->distance);
-	} else {
-		printf("Distance (%lf, %lf) too great from (%lf, %lf)\n", val_1,
-		       val_2, root->x_coord, root->y_coord);
 	}
 
 	if (0 == method % 2) {
 		if (val_1 < root->x_coord) {
+			if (root->right) {
+				distance = get_distance(root->right->x_coord,
+							root->right->y_coord,
+							val_1, val_2);
+
+				if (distance <= radius) {
+					root->right->distance = distance;
+					pqueue_insert(list, root->right,
+						      root->right->distance);
+				}
+			}
+
 			return nearest_neighbor(root->left, val_1, val_2,
 						radius, ++method, list);
-		} else if (val_1 > root->x_coord) {
+		} else {
+			if (root->left) {
+				distance = get_distance(root->left->x_coord,
+							root->left->y_coord,
+							val_1, val_2);
+
+				if (distance <= radius) {
+					root->left->distance = distance;
+					pqueue_insert(list, root->left,
+						      root->left->distance);
+				}
+			}
+
 			return nearest_neighbor(root->right, val_1, val_2,
 						radius, ++method, list);
-		} else {
-			return root;
 		}
 	} else {
 		if (val_2 < root->y_coord) {
+			if (root->right) {
+				distance = get_distance(root->right->x_coord,
+							root->right->y_coord,
+							val_1, val_2);
+
+				if (distance <= radius) {
+					root->right->distance = distance;
+					pqueue_insert(list, root->right,
+						      root->right->distance);
+				}
+			}
+
 			return nearest_neighbor(root->left, val_1, val_2,
 						radius, ++method, list);
-		} else if (val_2 > root->y_coord) {
+		} else {
+			if (root->left) {
+				distance = get_distance(root->left->x_coord,
+							root->left->y_coord,
+							val_1, val_2);
+
+				if (distance <= radius) {
+					root->left->distance = distance;
+					pqueue_insert(list, root->left,
+						      root->left->distance);
+				}
+			}
+
 			return nearest_neighbor(root->right, val_1, val_2,
 						radius, ++method, list);
-
-		} else {
-			return root;
 		}
 	}
 }
 
-void preorder(tree *root)
+void preorder(tree * root)
 {
 	if (!root) {
 		return;
@@ -161,7 +199,7 @@ void preorder(tree *root)
 	preorder(root->right);
 }
 
-void postorder(tree *root)
+void postorder(tree * root)
 {
 	if (!root) {
 		return;
@@ -172,7 +210,7 @@ void postorder(tree *root)
 	printf("(%lf, %lf) ", root->x_coord, root->y_coord);
 }
 
-void inorder(tree *root)
+void inorder(tree * root)
 {
 	if (!root) {
 		return;
@@ -183,64 +221,7 @@ void inorder(tree *root)
 	inorder(root->right);
 }
 
-void level_order(tree *root)
-{
-	if (!root) {
-		return;
-	}
-
-	llist_t *queue = llist_create();
-	tree *curr = root;
-
-	while (curr) {
-		printf("(%lf, %lf) ", root->x_coord, root->y_coord);
-
-		if (curr->left) {
-			llist_enqueue(queue, curr->left);
-		}
-		if (curr->right) {
-			llist_enqueue(queue, curr->right);
-		}
-
-		curr = llist_dequeue(queue);
-	}
-	llist_delete(queue, NULL);
-}
-
-int bst_minimum(tree *tree)
-{
-	while (tree->left)
-		tree = tree->left;
-
-	return tree->x_coord;
-}
-
-tree *bst_minimum_node(tree *tree)
-{
-	while (tree->left)
-		tree = tree->left;
-
-	return tree;
-}
-
-tree *bst_maximum_node(tree *tree)
-{
-	while (tree->right)
-		tree = tree->right;
-
-	return tree;
-}
-
-int bst_maximum(tree *tree)
-{
-	while (tree->right) {
-		tree = tree->right;
-	}
-
-	return tree->x_coord;
-}
-
-int tree_size(tree *tree)
+int tree_size(tree * tree)
 {
 	if (!tree) {
 		return 0;
@@ -251,7 +232,7 @@ int tree_size(tree *tree)
 	return 1 + count;
 }
 
-void print(tree *root)
+void print(tree * root)
 {
 	if (!root) {
 		return;
@@ -271,78 +252,7 @@ double get_distance(double x_val_1, double y_val_1, double x_val_2,
 	return sqrt(x_distance + y_distance);
 }
 
-tree *delete_node(tree **root, int val)
-{
-	val = (int)val;
-	// Return parent of deleted node except:
-	//
-	// 1. if deleted node does not exist then return null
-	// 2. if deleted node is the root then return new root
-	tree *node = NULL;
-	tree *tmp = 0;
-
-	if (node == 0) {
-		return *root;
-	}
-	// Root node.
-	//
-	// Treat special because root has no parent to relink.
-	//
-	// Only need special handling for:
-	//
-	// i. no children
-	// ii. one child
-	if (!node->parent) {
-		if (!node->left && !node->right) {
-			free(node);
-			*root = 0;
-			return *root;
-		}
-		if (!node->left || !node->right) {
-			tmp = (!node->left) ? node->right : node->left;
-			tmp->parent = 0;
-			free(node);
-			*root = tmp;
-			return *root;
-		}
-	}
-	// Replace deleted node with the minimum of its right branch.
-	//
-	// If missing the right branch then replace with the left branch, treating
-	// leaf nodes in the same manner.
-	//
-	// The minimum node cannot have a left child.
-	//
-	// But the minimum node can be the right child of the deleted node so replace
-	// deleted node's data with the minimum after testing if the minimum is its
-	// right child.
-	//
-	// NOTE: If a leaf or missing right branch, then saving the node and copying
-	// its data is extraneous but minimal work overall.
-	tree *x = node;
-	tmp = node->left;
-	if (node->right != 0) {
-		node = bst_minimum_node(node->right);
-		tmp = node->right;
-	}
-	if (node->x_coord > node->parent->x_coord) {
-		// Right child.
-		node->parent->right = tmp;
-	} else {
-		// Left child.
-		node->parent->left = tmp;
-	}
-	if (tmp != 0) {
-		tmp->parent = node->parent;
-	}
-	x->x_coord = node->x_coord;
-
-	tmp = node->parent;
-	free(node);
-	return tmp;
-}
-
-void tree_delete(tree **p_tree)
+void tree_delete(tree ** p_tree)
 {
 	if (!p_tree || !*p_tree) {
 		return;

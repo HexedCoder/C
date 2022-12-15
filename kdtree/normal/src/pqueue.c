@@ -6,17 +6,16 @@
 
 // Used after insertion to organize queue
 //
-static void heapify_up(uint16_t position, node_t *heap);
+static void heapify_up(uint16_t position, node_t * heap);
 
 // Used after extraction to reorganize queue
 //
-static void heapify_down(uint16_t position, uint16_t size, node_t *heap);
+static void heapify_down(uint16_t position, uint16_t size, node_t * heap);
 
 pqueue_t *pqueue_create(uint16_t capacity, del_f delete)
 {
 	pqueue_t *pqueue = malloc(sizeof(pqueue_t));
 	if (!pqueue) {
-		fprintf(stderr, "[!]ERR: Cannot allocate priority queue");
 		return NULL;
 	}
 
@@ -34,9 +33,9 @@ pqueue_t *pqueue_create(uint16_t capacity, del_f delete)
 	pqueue->capacity = capacity;
 
 	return pqueue;
-} /* pqueue_create() */
+}				/* pqueue_create() */
 
-void pqueue_delete(pqueue_t *pqueue)
+void pqueue_delete(pqueue_t * pqueue)
 {
 	if (!pqueue) {
 		fprintf(stderr, "Could not destroy queue");
@@ -58,9 +57,9 @@ void pqueue_delete(pqueue_t *pqueue)
 		pqueue->capacity = 0;
 	}
 	free(pqueue);
-} /* pqueue_delete() */
+}				/* pqueue_delete() */
 
-static void heapify_up(uint16_t position, node_t *heap)
+static void heapify_up(uint16_t position, node_t * heap)
 {
 	int32_t parent = (position - 1) / 2;
 	if (parent < 0) {
@@ -74,9 +73,9 @@ static void heapify_up(uint16_t position, node_t *heap)
 		heap[position] = temp;
 		heapify_up(parent, heap);
 	}
-} /* heapify_up() */
+}				/* heapify_up() */
 
-int pqueue_insert(pqueue_t *pqueue, void *item, double priority)
+int pqueue_insert(pqueue_t * pqueue, void *item, double priority)
 {
 	if (!pqueue || !pqueue->heap) {
 		return 0;
@@ -95,11 +94,11 @@ int pqueue_insert(pqueue_t *pqueue, void *item, double priority)
 	}
 	return 1;
 
-} /* pqueue_insert() */
+}				/* pqueue_insert() */
 
 // Used after extraction to reorganize queue
 //
-static void heapify_down(uint16_t position, uint16_t size, node_t *heap)
+static void heapify_down(uint16_t position, uint16_t size, node_t * heap)
 {
 	uint16_t left_child = 2 * position + 1;
 	uint16_t right_child = 2 * position + 2;
@@ -109,9 +108,7 @@ static void heapify_down(uint16_t position, uint16_t size, node_t *heap)
 	}
 
 	uint16_t swap_idx = heap[left_child].priority <
-					    heap[right_child].priority ?
-				    left_child :
-				    right_child;
+	    heap[right_child].priority ? left_child : right_child;
 
 	if (heap[position].priority > heap[swap_idx].priority) {
 		node_t temp = heap[swap_idx];
@@ -120,9 +117,9 @@ static void heapify_down(uint16_t position, uint16_t size, node_t *heap)
 
 		heapify_down(swap_idx, size, heap);
 	}
-} /* heapify_down() */
+}				/* heapify_down() */
 
-void *pqueue_extract(pqueue_t *pqueue)
+void *pqueue_extract(pqueue_t * pqueue)
 {
 	if (!pqueue | !pqueue->heap) {
 		return NULL;
@@ -141,24 +138,24 @@ void *pqueue_extract(pqueue_t *pqueue)
 		heapify_down(0, pqueue->count, pqueue->heap);
 	}
 	return temp;
-} /* pqueue_extract() */
+}				/* pqueue_extract() */
 
-bool pqueue_is_empty(pqueue_t *pqueue)
+bool pqueue_is_empty(pqueue_t * pqueue)
 {
 	return !pqueue || pqueue->count == 0;
-} /* pqueue_is_empty() */
+}				/* pqueue_is_empty() */
 
-bool pqueue_is_full(pqueue_t *pqueue)
+bool pqueue_is_full(pqueue_t * pqueue)
 {
 	return pqueue->capacity == pqueue->count;
-} /* pqueue_is_full() */
+}				/* pqueue_is_full() */
 
-void pqueue_print(pqueue_t *pqueue)
+void pqueue_print(pqueue_t * pqueue)
 {
 	node_t node = pqueue->heap[0];
 
 	tree *data = node.node_data;
-	printf("Priority - %lf: (%lf, %lf) \n", node.priority, data->x_coord,
+	printf("Distance: %lf from (%lf, %lf)\n", node.priority, data->x_coord,
 	       data->y_coord);
 }
 

@@ -31,7 +31,7 @@ indent:
 	@rm ./src/*.c~ ./src/*.h~
 
 run: $(BIN)
-	./$(BIN) -x 18.334138 -y -66.066365
+	./$(BIN) -x 18.334138 -y -66.066365 -k 3
 
 clean:
 	@rm -rf $(OBJ_DIR) $(BIN) $(DRIVER) gmon.out
@@ -42,7 +42,7 @@ profile: $(BIN)
 
 valgrind: CFLAGS += -g3
 valgrind: $(BIN)
-	valgrind $(VAL_FLAGS) ./$(BIN) -x 46.195469 -y -119.27
+	valgrind $(VAL_FLAGS) ./$(BIN) -x 46.195469 -y -119.27 -f
 
 $(OBJ_DIR):
 	@mkdir -p $@

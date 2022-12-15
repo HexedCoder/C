@@ -142,6 +142,8 @@ int main(int argc, char *argv[])
 	double x_coord = 0;
 	double y_coord = 0;
 	char *broken = NULL;
+	const char *file_name = "input";
+	int num_neighbors = 1;
 
 	// Long option implementation adapted from Mead's Guide
 	// https://azrael.digipen.edu/~mmead/www/Courses/CS180/getopt.html
@@ -149,20 +151,33 @@ int main(int argc, char *argv[])
 	static struct option long_options[] = {
 		{"x_coord", required_argument, NULL, 'x'},
 		{"y_coord", required_argument, NULL, 'y'},
+		{"file", required_argument, NULL, 'f'},
+		{"knn", required_argument, NULL, 'k'},
 	};
-	while ((opt = getopt_long(argc, argv, "x:y:", long_options,
+	while ((opt = getopt_long(argc, argv, "x:y:f:k:", long_options,
 				  &option_index)) != -1) {
 		switch (opt) {
 		case 'x':
 			x_coord = strtod(optarg, &broken);
 			if (*broken) {
+				printf("x: Invalid x_coord provided\n");
 				exit(1);
 			}
 			break;
 		case 'y':
 			y_coord = strtod(optarg, &broken);
-			;
 			if (*broken) {
+				printf("y: Invalid y_coord provided\n");
+				exit(1);
+			}
+			break;
+		case 'f':
+			file_name = optarg;
+			break;
+		case 'k':
+			num_neighbors = strtod(optarg, &broken);
+			if (*broken) {
+				printf("K: Invalid integer provided\n");
 				exit(1);
 			}
 			break;
@@ -179,8 +194,11 @@ int main(int argc, char *argv[])
 		exit(1);
 	}
 
-	const char *file_name = "input";
 	FILE *file = read_file(file_name);
+
+	if (!file) {
+		exit(1);
+	}
 
 	int line_no = 0;
 	int count = 1;
@@ -229,36 +247,34 @@ int main(int argc, char *argv[])
 			}
 		} else {
 			int ret = kd_insert(bst, create_tree_node(x_coord,
-							       y_coord), 0);
+								  y_coord), 0);
 			if (!ret) {
 				fprintf(stderr, "Unable to insert into tree\n");
+				fclose(file);
+				tree_delete(&bst);
+				exit(1);
 			}
 		}
 
 	}
 
-	tree *res = search(bst, 1, 5, 0);
+	pqueue_t *queue = pqueue_create(100, NULL);
 
-	if (!res) {
-		printf("Node does not exist\n");
-	} else {
-		printf("Node found: (%lf, %lf)\n\n", res->x_coord,
-		       res->y_coord);
+	if (!queue) {
+		fprintf(stderr, "Unable to allocate memory\n");
+		exit(1);
 	}
 
-	pqueue_t *queue = pqueue_create(STARTING_CAP, NULL);
-	res = nearest_neighbor(bst, x_coord, y_coord, 100, 0, queue);
+	nearest_neighbor(bst, x_coord, y_coord, 100, 0, queue);
 
-//      printf("\n");
-
-	for (int i = 0; i < 4; ++i) {
+	for (int i = 0; i < num_neighbors; ++i) {
 		if (!pqueue_is_empty(queue)) {
 			pqueue_print(queue);
 			pqueue_extract(queue);
+		} else {
+			break;
 		}
 	}
-
-//      printf("Nearest found: (%lf, %lf)\n", res->x_coord, res->y_coord);
 
 	fclose(file);
 
