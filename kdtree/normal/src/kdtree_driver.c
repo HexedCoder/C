@@ -11,7 +11,7 @@
 
 #include "kdtree.h"
 #include "file_io.h"
-#include "llist.h"
+#include "pqueue.h"
 
 #include <string.h>
 #include <stdlib.h>
@@ -20,17 +20,12 @@
 #include <float.h>
 #include <math.h>
 
+#define STARTING_CAP 20
+
 struct trunk {
 	struct trunk *prev;
 	const char *str;
 };
-
-typedef struct coordinate coordinate;
-
-typedef struct coordinate {
-	double x_coord;
-	double y_coord;
-} coordinate;
 
 int find_median(FILE * file)
 {
@@ -137,7 +132,7 @@ void node_print(void *value)
 
 	tree *node = (tree *) value;
 
-	printf("(%lf, %lf, %lf)\n", node->x_coord, node->x_coord,
+	printf("(%lf, %lf, %lf\n", node->x_coord, node->x_coord,
 	       node->distance);
 }
 
@@ -227,14 +222,17 @@ int main(int argc, char *argv[])
 		//              int median = find_median(file);
 
 		if (1 == count++) {
-			bst = create_node(x_coord, y_coord);
+			bst = create_tree_node(x_coord, y_coord);
 
 			if (!bst) {
 				exit(1);
 			}
 		} else {
-			bst_insert(bst, create_node(x_coord, y_coord), 0);
-			printf("Node: (%lf, %lf)\n", x_coord, y_coord);
+			int ret = kd_insert(bst, create_tree_node(x_coord,
+							       y_coord), 0);
+			if (!ret) {
+				fprintf(stderr, "Unable to insert into tree\n");
+			}
 		}
 
 	}
@@ -248,16 +246,22 @@ int main(int argc, char *argv[])
 		       res->y_coord);
 	}
 
-	llist_t *tree = llist_create();
-	res = nearest_neighbor(bst, x_coord, y_coord, 100, 0, NULL);
+	pqueue_t *queue = pqueue_create(STARTING_CAP, NULL);
+	res = nearest_neighbor(bst, x_coord, y_coord, 100, 0, queue);
 
-	printf("\n");
-	llist_print(tree, (void (*)(void *))node_print);
+//      printf("\n");
 
-	printf("Nearest found: (%lf, %lf)\n", res->x_coord, res->y_coord);
+	for (int i = 0; i < 4; ++i) {
+		if (!pqueue_is_empty(queue)) {
+			pqueue_print(queue);
+			pqueue_extract(queue);
+		}
+	}
+
+//      printf("Nearest found: (%lf, %lf)\n", res->x_coord, res->y_coord);
 
 	fclose(file);
 
 	tree_delete(&bst);
-	llist_delete(tree, NULL);
+	pqueue_delete(queue);
 }

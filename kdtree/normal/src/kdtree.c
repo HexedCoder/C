@@ -6,12 +6,12 @@
 #include "llist.h"
 #include "math.h"
 
-typedef struct node_t {
-	struct node_t *next;
+typedef struct kd_node_t {
+	struct kd_node_t *next;
 	void *data;
-} node_t;
+} kd_node_t;
 
-tree *create_node(double val_1, double val_2)
+tree *create_tree_node(double val_1, double val_2)
 {
 	tree *tmp = NULL;
 
@@ -25,12 +25,12 @@ tree *create_node(double val_1, double val_2)
 	}
 
 	return tmp;
-}				/* create_node() */
+} /* create_tree_node() */
 
-tree *bst_insert(tree * root, tree * node, int method)
+int kd_insert(tree *root, tree *node, int method)
 {
 	if (!root || !node) {
-		return NULL;
+		return 0;
 	}
 
 	while (root) {
@@ -77,10 +77,10 @@ tree *bst_insert(tree * root, tree * node, int method)
 		}
 	}
 
-	return root;
+	return 1;
 }
 
-tree *search(tree * root, double val_1, double val_2, int method)
+tree *search(tree *root, double val_1, double val_2, int method)
 {
 	if (!root) {
 		return NULL;
@@ -106,21 +106,21 @@ tree *search(tree * root, double val_1, double val_2, int method)
 	}
 }
 
-tree *nearest_neighbor(tree * root, double val_1, double val_2, double radius,
-		       int method, llist_t * list)
+tree *nearest_neighbor(tree *root, double val_1, double val_2, double radius,
+		       int method, pqueue_t *list)
 {
 	if (!root) {
 		return NULL;
 	}
 
 	double distance =
-	    get_distance(root->x_coord, root->y_coord, val_1, val_2);
+		get_distance(root->x_coord, root->y_coord, val_1, val_2);
 	root->distance = distance;
 
 	if (distance <= radius) {
 		printf("Neighbor (%lf, %lf) has distance %lf\n", root->x_coord,
 		       root->y_coord, distance);
-		//              llist_enqueue(list, root);
+		pqueue_insert(list, root, root->distance);
 	} else {
 		printf("Distance (%lf, %lf) too great from (%lf, %lf)\n", val_1,
 		       val_2, root->x_coord, root->y_coord);
@@ -150,7 +150,7 @@ tree *nearest_neighbor(tree * root, double val_1, double val_2, double radius,
 	}
 }
 
-void preorder(tree * root)
+void preorder(tree *root)
 {
 	if (!root) {
 		return;
@@ -161,7 +161,7 @@ void preorder(tree * root)
 	preorder(root->right);
 }
 
-void postorder(tree * root)
+void postorder(tree *root)
 {
 	if (!root) {
 		return;
@@ -172,7 +172,7 @@ void postorder(tree * root)
 	printf("(%lf, %lf) ", root->x_coord, root->y_coord);
 }
 
-void inorder(tree * root)
+void inorder(tree *root)
 {
 	if (!root) {
 		return;
@@ -183,7 +183,7 @@ void inorder(tree * root)
 	inorder(root->right);
 }
 
-void level_order(tree * root)
+void level_order(tree *root)
 {
 	if (!root) {
 		return;
@@ -207,7 +207,7 @@ void level_order(tree * root)
 	llist_delete(queue, NULL);
 }
 
-int bst_minimum(tree * tree)
+int bst_minimum(tree *tree)
 {
 	while (tree->left)
 		tree = tree->left;
@@ -215,7 +215,7 @@ int bst_minimum(tree * tree)
 	return tree->x_coord;
 }
 
-tree *bst_minimum_node(tree * tree)
+tree *bst_minimum_node(tree *tree)
 {
 	while (tree->left)
 		tree = tree->left;
@@ -223,7 +223,7 @@ tree *bst_minimum_node(tree * tree)
 	return tree;
 }
 
-tree *bst_maximum_node(tree * tree)
+tree *bst_maximum_node(tree *tree)
 {
 	while (tree->right)
 		tree = tree->right;
@@ -231,7 +231,7 @@ tree *bst_maximum_node(tree * tree)
 	return tree;
 }
 
-int bst_maximum(tree * tree)
+int bst_maximum(tree *tree)
 {
 	while (tree->right) {
 		tree = tree->right;
@@ -240,7 +240,7 @@ int bst_maximum(tree * tree)
 	return tree->x_coord;
 }
 
-int tree_size(tree * tree)
+int tree_size(tree *tree)
 {
 	if (!tree) {
 		return 0;
@@ -251,7 +251,7 @@ int tree_size(tree * tree)
 	return 1 + count;
 }
 
-void print(tree * root)
+void print(tree *root)
 {
 	if (!root) {
 		return;
@@ -271,7 +271,7 @@ double get_distance(double x_val_1, double y_val_1, double x_val_2,
 	return sqrt(x_distance + y_distance);
 }
 
-tree *delete_node(tree ** root, int val)
+tree *delete_node(tree **root, int val)
 {
 	val = (int)val;
 	// Return parent of deleted node except:
@@ -342,7 +342,7 @@ tree *delete_node(tree ** root, int val)
 	return tmp;
 }
 
-void tree_delete(tree ** p_tree)
+void tree_delete(tree **p_tree)
 {
 	if (!p_tree || !*p_tree) {
 		return;
