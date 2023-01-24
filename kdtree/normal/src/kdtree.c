@@ -27,7 +27,7 @@ struct trunk {
 	const char *str;
 };
 
-int find_median(FILE * file)
+int find_median(FILE *file)
 {
 	if (!file) {
 		return INT32_MIN;
@@ -71,7 +71,7 @@ int find_median(FILE * file)
 	fseek(file, curr_location, SEEK_SET);
 
 	return 2;
-}				/* find_median() */
+} /* find_median() */
 
 static void print_trunks(struct trunk *p)
 {
@@ -82,7 +82,7 @@ static void print_trunks(struct trunk *p)
 	printf("%s", p->str);
 }
 
-static void print_recursive(tree * root, struct trunk *prev, int is_left)
+static void print_recursive(tree *root, struct trunk *prev, int is_left)
 {
 	if (!root) {
 		return;
@@ -103,7 +103,8 @@ static void print_recursive(tree * root, struct trunk *prev, int is_left)
 	}
 
 	print_trunks(&this_disp);
-	printf("(%lf, %lf) \n", root->x_coord, root->y_coord);	// whatever custom print you need
+	printf("(%lf, %lf) \n", root->x_coord, root->y_coord); //
+	// whatever custom print you need
 
 	if (prev) {
 		prev->str = prev_str;
@@ -116,7 +117,7 @@ static void print_recursive(tree * root, struct trunk *prev, int is_left)
 	}
 }
 
-void print_visual(tree * root)
+void print_visual(tree *root)
 {
 	if (!root) {
 		return;
@@ -130,7 +131,7 @@ void node_print(void *value)
 		return;
 	}
 
-	tree *node = (tree *) value;
+	tree *node = (tree *)value;
 
 	printf("(%lf, %lf, %lf\n", node->x_coord, node->x_coord,
 	       node->distance);
@@ -149,11 +150,11 @@ int main(int argc, char *argv[])
 	// https://azrael.digipen.edu/~mmead/www/Courses/CS180/getopt.html
 	int option_index = 0;
 	static struct option long_options[] = {
-		{"x_coord", required_argument, NULL, 'x'},
-		{"y_coord", required_argument, NULL, 'y'},
-		{"file", required_argument, NULL, 'f'},
-		{"knn", required_argument, NULL, 'k'},
-		{"help", required_argument, NULL, 'k'},
+		{ "x_coord", required_argument, NULL, 'x' },
+		{ "y_coord", required_argument, NULL, 'y' },
+		{ "file", required_argument, NULL, 'f' },
+		{ "knn", required_argument, NULL, 'k' },
+		{ "help", required_argument, NULL, 'k' },
 	};
 	while ((opt = getopt_long(argc, argv, "x:y:f:k:h", long_options,
 				  &option_index)) != -1) {
@@ -184,24 +185,18 @@ int main(int argc, char *argv[])
 			break;
 		case 'h':
 		default:
-			printf
-			    ("Usage ./driver -f input_file -x <x_coord> -y <y_coord>\n");
-			printf
-			    ("\t-f | --file <arg>: file to input (input, by default)\n");
-			printf
-			    ("\t-x | --x_coord <arg>: x-coord between -180 and 180)\n");
-			printf
-			    ("\t-y | --y_coord <arg>: y-coord between -180 and 180)\n");
+			printf("Usage ./driver -f input_file -x <x_coord> -y <y_coord>\n");
+			printf("\t-f | --file <arg>: file to input (input, by default)\n");
+			printf("\t-x | --x_coord <arg>: x-coord between -180 and 180)\n");
+			printf("\t-y | --y_coord <arg>: y-coord between -180 and 180)\n");
 			exit(1);
 		}
 	}
 
 	if (fabs(x_coord) > 180 || fabs(y_coord) > 180) {
 		printf("Mandatory Arg:\n");
-		printf
-		    ("\t-x | --x_coord <arg>: x-coord between -180 and 180)\n");
-		printf
-		    ("\t-y | --y_coord <arg>: y-coord between -180 and 180)\n");
+		printf("\t-x | --x_coord <arg>: x-coord between -180 and 180)\n");
+		printf("\t-y | --y_coord <arg>: y-coord between -180 and 180)\n");
 		exit(1);
 	}
 
@@ -268,10 +263,9 @@ int main(int argc, char *argv[])
 				exit(1);
 			}
 		} else {
-			int ret = kd_insert(bst,
-					    create_tree_node(tmp_x_coord,
-							     tmp_y_coord),
-					    0);
+			int ret = kd_insert(
+				bst, create_tree_node(tmp_x_coord, tmp_y_coord),
+				0);
 			if (!ret) {
 				fprintf(stderr, "Unable to insert into tree\n");
 				fclose(file);

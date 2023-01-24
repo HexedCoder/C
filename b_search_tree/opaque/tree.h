@@ -26,45 +26,45 @@ typedef struct person {
  */
 tree *tree_create(compare compare_func, action action_func);
 
-void print_visual(tree * root);
+void print_visual(tree *root);
 
-void preorder(tree * root);
+void preorder(tree *root);
 
-int get_income(tree * tree);
+int get_income(tree *tree);
 
-int get_age_income(tree * tree, int min, int max);
+int get_age_income(tree *tree, int min, int max);
 
-void postorder(tree * root);
+void postorder(tree *root);
 
-void inorder(tree * root);
+void inorder(tree *root);
 
-void levelorder(tree * root);
+void levelorder(tree *root);
 
 /**
- * @brief Adds void* data to linked-list as stack
+ * @brief Adds void * data to tree
  *
- * @param p_llist Linked-list which will hold data
- * @param data Void* being added to linked-list
- * @return 1 On success
- * @return 0 On failure
+ * @param tree * root Variable to define the tree the node is going in
+ * @param void * data Variable to define the data to add the tree
+ * @return 1 On success, 0 On failure
  */
-int tree_insert(tree * root, void *data);
+int tree_insert(tree *root, void *data);
 
 void *tree_search(tree *, void *);
 
-void *tree_minimum(tree * tree);
+void *tree_minimum(tree *tree);
 
-void *tree_maximum(tree * tree);
+void *tree_maximum(tree *tree);
 
 /**
- * @brief Checks size of linked-list
+ * @brief Checks the tree and returns the number of elements in the tree
  *
- * @param p_llist Linked-list to check
- * @return uint64_t Number of elements in linked-list
+ * @param tree * root Variable for tree to check the size of
+ *
+ * @return Size of tree on success, or 0 on failure
  */
-int tree_size(tree * tree);
+int tree_size(tree *tree);
 
-int tree_delete(tree ** root, void *val);
+int tree_delete(tree **root, void *val);
 
 /**
  * @brief Function to delete linked-list and free memory
@@ -72,6 +72,8 @@ int tree_delete(tree ** root, void *val);
  * @param p_llist Linked-list to delete
  * @param destroy_data Function describing how to delete
  */
-void tree_destroy(tree ** p_tree);
+void tree_destroy(tree **p_tree);
 
 #endif
+
+/*** END OF FILE ***/
