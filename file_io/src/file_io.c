@@ -2,12 +2,15 @@
 *
 * @brief This module implements the functions in file_io.h
 * @par
-* COPYRIGHT NOTICE: (c) 2022 Jacob Hitchcox
+* COPYRIGHT NOTICE: (c) 2023 Jacob Hitchcox
 */
+#define _GNU_SOURCE
 
 #include "file_io.h"
 
 #include <getopt.h>
+#include <errno.h>
+#include <signal.h>
 
 int get_args(int argc, char *argv[])
 {
@@ -86,9 +89,8 @@ FILE *read_file(const char *file_name)
 	if (!file) {
 		perror("Fatal - Unable to open");
 	}
-
 	// ensure file is not empty
-	if (!get_length(file)) {
+	if (!f_get_length(file)) {
 		fclose(file);
 		printf("Empty file input\n");
 		file = NULL;
@@ -97,20 +99,66 @@ FILE *read_file(const char *file_name)
 	return file;
 } /* read_file() */
 
-long get_length(FILE *file)
+long f_get_length(FILE *file)
 {
 	if (!file) {
 		printf("Invalid file input\n");
 		return -1;
 	}
 
-	// save location of file pointer
-	long curr_location = ftell(file);
-	fseek(file, 0, SEEK_END);
-	long length = ftell(file);
+	struct stat st_struct;
+	if (fstat(fileno(file), &st_struct) != 0) {
+		perror("Failed to get file status");
+		return -1;
+	}
 
-	// reset file pointer location
-	fseek(file, curr_location, SEEK_SET);
+	return st_struct.st_size;
 
-	return length;
-} /* get_length() */
+} /* f_get_length() */
+
+long fd_get_length(int fd)
+{
+	if (!fd) {
+		fprintf(stderr, "Invalid file descriptor provided.\n");
+		return -1;
+	}
+
+	struct stat st_struct;
+	if (fstat(fd, &st_struct) != 0) {
+		perror("Failed to get file status");
+		return -1;
+	}
+
+	return st_struct.st_size;
+
+} /* fd_get_length() */
+
+ssize_t get_input(char *input_buffer, const char *msg)
+{
+	char *current_dir = get_current_dir_name();
+	printf("\033[1m%s\033[0m %s ", msg, current_dir);
+	free(current_dir);
+
+	char *ptr = fgets(input_buffer, 4096, stdin);
+
+	if (!ptr || ' ' == ptr[0]) {
+		printf("Invalid\n");
+		return 0;
+	}
+
+	if (feof(stdin) || ferror(stdin)) {
+		puts("");
+		kill(0, SIGINT);
+	} else if (errno) {
+		perror(" fgets");
+		fprintf(stderr, "Error code: %d\n", errno);
+
+		errno = 0;
+		return -1;
+	}
+
+	strrchr(input_buffer, '\n')[0] = '\0';
+
+	return strlen(input_buffer);
+
+} /* get_input() */
