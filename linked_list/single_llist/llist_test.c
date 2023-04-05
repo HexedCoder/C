@@ -6,7 +6,7 @@
  *
  */
 
-#include "llist.h"
+#include "../src/llist.h"
 #include <check.h>
 #include <stdio.h>
 #include <stdlib.h>
