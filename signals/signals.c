@@ -6,20 +6,23 @@
  * 
  */
 
-#include <errno.h>
-#include <stdlib.h>
-#include <stdio.h>
-
 #include "signals.h"
 
-int establish_handler(int signum, handler func)
+int establish_handler(int signum, handler_func func)
 {
+	if (!signum || !func) {
+		return 1;
+	}
 	struct sigaction sa = {
 		.sa_handler = func,
 		.sa_flags = 0,
 	};
 
 	int result = 0;
+
+	if (signum == SIGWINCH) {
+		sa.sa_flags = SA_RESTART;
+	}
 
 	if (-1 == sigaction(signum, &sa, NULL)) {
 		perror("sigaction");
@@ -30,15 +33,15 @@ int establish_handler(int signum, handler func)
 	return result;
 }				/* establish_handler() */
 
-int block_signals(int num_signals, ...)
+void block_signals(int num_signals, ...)
 {
+	if (num_signals < 1) {
+		return;
+	}
+
 	sigset_t mask;
 
-	if (-1 == sigemptyset(&mask)) {
-		perror("sigemptyset");
-		errno = 0;
-		return 1;
-	}
+	sigemptyset(&mask);
 
 	va_list signal_list;
 	va_start(signal_list, num_signals);
@@ -46,88 +49,50 @@ int block_signals(int num_signals, ...)
 	for (int i = 0; i < num_signals; i++) {
 		int signum = va_arg(signal_list, int);
 
-		if (-1 == sigaddset(&mask, signum)) {
-			perror("sigaddset");
-			errno = 0;
-			va_end(signal_list);
-			return 1;
-		}
+		sigaddset(&mask, signum);
 	}
 
 	va_end(signal_list);
 
-	if (-1 == sigprocmask(SIG_BLOCK, &mask, NULL)) {
-		perror("sigpromask");
-		errno = 0;
-		return 1;
-	}
-
-	return 0;
+	sigprocmask(SIG_BLOCK, &mask, NULL);
 }				/* block_signals() */
 
-int unblock_signals(int num_signals, ...)
+void unblock_signals(int num_signals, ...)
 {
-	sigset_t mask;
-	if (-1 == sigemptyset(&mask)) {
-		perror("sigemptyset");
-		errno = 0;
-		return 1;
+	if (num_signals < 1) {
+		return;
 	}
+
+	sigset_t mask;
+	sigemptyset(&mask);
 
 	va_list signal_list;
 	va_start(signal_list, num_signals);
 
 	for (int i = 0; i < num_signals; i++) {
 		int signum = va_arg(signal_list, int);
-		if (-1 == sigaddset(&mask, signum)) {
-			perror("sigaddset");
-			errno = 0;
-			va_end(signal_list);
-			return 1;
-		}
+		sigaddset(&mask, signum);
 	}
 
 	va_end(signal_list);
 
-	if (-1 == sigprocmask(SIG_UNBLOCK, &mask, NULL)) {
-		perror("sigprocmask");
-		errno = 0;
-		return 1;
-	}
-
-	return 0;
+	sigprocmask(SIG_UNBLOCK, &mask, NULL)
 }				/* unblock_signals() */
 
-int block_all_signals(void)
+void block_all_signals(void)
 {
 	sigset_t mask;
-	if (sigfillset(&mask) == -1) {
-		perror("sigfillset");
-		return 1;
-	}
+	sigfillset(&mask);
 
-	if (sigprocmask(SIG_BLOCK, &mask, NULL) == -1) {
-		perror("sigprocmask");
-		return 1;
-	}
-
-	return 0;
+	sigprocmask(SIG_BLOCK, &mask, NULL);
 }				/* block_all_signals() */
 
-int unblock_all_signals(void)
+void unblock_all_signals(void)
 {
 	sigset_t mask;
-	if (sigemptyset(&mask) == -1) {
-		perror("sigemptyset");
-		return 1;
-	}
+	sigemptyset(&mask);
 
-	if (sigprocmask(SIG_UNBLOCK, &mask, NULL) == -1) {
-		perror("sigprocmask");
-		return 1;
-	}
-
-	return 0;
+	sigprocmask(SIG_UNBLOCK, &mask, NULL);
 }				/* unblock_all_signals() */
 
 /* end of file */
