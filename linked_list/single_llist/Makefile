@@ -5,21 +5,21 @@ CFLAGS += -Wwrite-strings -Wfloat-equal -D_DEFAULT_SOURCE
 
 VAL_FLAGS := -s --leak-check=full --show-leak-kinds=all --track-origins=yes
 
-SRC_DIR := .
+SRC_DIR := src
 OBJ_DIR := obj
-TST_DIR := .
+TST_DIR := test
 
 SRCS := $(wildcard $(SRC_DIR)/*.c)
 OBJS := $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(SRCS))
-OBJS := $(filter-out $(OBJ_DIR)/$(BIN)_test.o, $(OBJS))
+OBJS := $(filter-out $(OBJ_DIR)/$(BIN)_check.o, $(OBJS))
 
 BIN := driver
 CHECK := $(BIN)_check
 CC:= gcc-9
 
 TSTS := $(wildcard $(TST_DIR)/*.c)
+TST_OBJS := $(filter-out $(OBJ_DIR)/llist_$(BIN).o, $(OBJS))
 TST_OBJS += $(patsubst $(TST_DIR)/%.c, $(OBJ_DIR)/%.o, $(TSTS))
-TST_OBJS := $(filter-out $(OBJ_DIR)/$(BIN)_driver.o, $(TST_OBJS))
 TST_LIBS := -lcheck -lm -pthread -lrt -lsubunit
 
 all: $(BIN)
@@ -51,6 +51,7 @@ $(OBJ_DIR):
 	@mkdir -p $@
 
 $(OBJS): | $(OBJ_DIR)
+$(TST_OBJS): | $(OBJ_DIR)
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 	@echo $<
@@ -64,9 +65,10 @@ OBJS := $(filter-out $(OBJ_DIR)/$(BIN)_test.o, $(OBJS))
 $(BIN): $(OBJS)
 	$(CC) $(CFLAGS) $^ -o $@
 
+$(CHECK): CFLAGS += -g3
 $(CHECK): $(TST_OBJS)
 	$(CC) $(CFLAGS) $^ -o $@ $(TST_LIBS)
-	./$(CHECK)
+	valgrind $(VAL_FLAGS) ./$(CHECK)
 
 print:
 #	$(info $$CFLAGS is [${CFLAGS}])

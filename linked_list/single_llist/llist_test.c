@@ -184,15 +184,64 @@ END_TEST START_TEST(test_invalid_find_operation)
 
 	llist_t *llist = setup_queue(valid_string, len);
 
-	node_t *curr = (node_t *) llist_find(llist,
-					     (void *)&search_char,
-					     char_cmp);
+	node_t *curr =
+		(node_t *)llist_find(llist, (void *)&search_char, char_cmp);
 	ck_assert_ptr_null(curr);
 
 	llist_delete(llist, (void (*)(void *))free);
 }
 
-END_TEST Suite * check_llist(void)
+END_TEST
+
+START_TEST(test_linked_list_ops)
+{
+	fprintf(stderr, "-----LLIST----\n");
+
+	fprintf(stderr, "Start: test_linked_list_ops\n");
+	llist_t *list = llist_create();
+
+	char *word_list[] = { (char *)"Word", (char *)"Word2", (char *)"Word3",
+			      (char *)"Word4", (char *)"Word5" };
+
+	fprintf(stderr, "\tTest: llist_enqueue/get_size\n");
+	for (size_t i = 0; i < 5; ++i) {
+		llist_enqueue(list, word_list[i]);
+
+		// null inputs should not append
+		llist_enqueue(list, NULL);
+		ck_assert(get_size(list) == i + 1);
+	}
+
+	fprintf(stderr, "\tTest: llist_pop/get_size\n");
+	for (size_t i = 5; i > 0; --i) {
+		llist_pop(list);
+		ck_assert(get_size(list) == i - 1);
+	}
+
+	fprintf(stderr, "\tTest: llist_print (empty list)\n");
+	// Nothing should print
+	llist_print(list, word_print);
+
+	for (size_t i = 0; i < 5; ++i) {
+		// null inputs should not append
+		llist_enqueue(list, NULL);
+		llist_enqueue(list, word_list[i]);
+	}
+
+	fprintf(stderr, "\tTest: llist_print/llist_clear/get_size\n");
+	// each element should print on its own line
+	llist_print(list, word_print);
+	llist_clear(list);
+	ck_assert(get_size(list) == 0);
+
+	fprintf(stderr, "End: test_linked_list_ops\n");
+
+	fprintf(stderr, "-----END LLIST----\n\n");
+}
+
+END_TEST
+
+Suite *check_llist(void)
 {
 	Suite *suite;
 
@@ -208,6 +257,7 @@ END_TEST Suite * check_llist(void)
 	tcase_add_test(tc_valid, test_valid_queue_operation);
 	tcase_add_test(tc_valid, test_valid_extract_back_operation);
 	tcase_add_test(tc_valid, test_valid_find_operation);
+	tcase_add_test(tc_valid, test_linked_list_ops);
 
 	tc_invalid = tcase_create("Invalid");
 	tcase_set_tags(tc_invalid, "Invalid");
@@ -234,7 +284,7 @@ int main()
 
 	srunner_set_fork_status(runner, CK_NOFORK);
 
-//    srunner_run_tagged(runner, NULL, NULL, "Valid", NULL, CK_VERBOSE);
+	//	srunner_run_tagged(runner, NULL, NULL, "Valid", NULL, CK_VERBOSE);
 	srunner_run_all(runner, CK_VERBOSE);
 
 	int no_failed = srunner_ntests_failed(runner);

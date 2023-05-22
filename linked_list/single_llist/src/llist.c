@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <pthread.h>
 
 #include "llist.h"
 
@@ -11,6 +12,7 @@ struct llist_t {
 	node_t *head;
 	node_t *tail;
 	uint64_t count;
+	pthread_mutex_t mutex;
 };
 
 static node_t *create_node(void *data);
@@ -18,7 +20,7 @@ static node_t *create_node(void *data);
 llist_t *llist_create()
 {
 	return calloc(1, sizeof(llist_t));
-}				/* llist_create() */
+} /* llist_create() */
 
 static node_t *create_node(void *data)
 {
@@ -41,7 +43,9 @@ void llist_delete(llist_t * p_llist, void (*destroy_data)(void *))
 	node_t *curr = p_llist->head;
 	while (curr) {
 		p_llist->head = curr->next;
-		destroy_data(curr->data);
+		if (curr->data) {
+			destroy_data(curr->data);
+		}
 		free(curr);
 		curr = p_llist->head;
 	}
@@ -57,6 +61,9 @@ int llist_push(llist_t * p_llist, void *data)
 	}
 
 	node_t *node = create_node(data);
+
+	pthread_mutex_lock(&p_llist->mutex);
+
 	if (!node) {
 		goto INSERT_FRONT;
 	}
@@ -71,15 +78,19 @@ int llist_push(llist_t * p_llist, void *data)
 	}
 
 	p_llist->count++;
+	pthread_mutex_unlock(&p_llist->mutex);
+
 	ret = 1;
 
- INSERT_FRONT:
+INSERT_FRONT:
 	return ret;
-}				/* llist_push() */
+} /* llist_push() */
 
-void *llist_pop(llist_t * p_llist)
+void *llist_pop(llist_t *p_llist)
 {
 	void *ret = NULL;
+
+	pthread_mutex_lock(&p_llist->mutex);
 	if (!p_llist->head) {
 		goto EXTRACT_FRONT;
 	}
@@ -96,12 +107,13 @@ void *llist_pop(llist_t * p_llist)
 	free(curr);
 
 	p_llist->count--;
+	pthread_mutex_unlock(&p_llist->mutex);
 
- EXTRACT_FRONT:
+EXTRACT_FRONT:
 	return ret;
-}				/* llist_pop() */
+} /* llist_pop() */
 
-int llist_enqueue(llist_t * p_llist, void *data)
+int llist_enqueue(llist_t *p_llist, void *data)
 {
 	int ret = 0;
 	if (!p_llist || !data) {
@@ -109,6 +121,8 @@ int llist_enqueue(llist_t * p_llist, void *data)
 	}
 
 	node_t *node = create_node(data);
+	pthread_mutex_lock(&p_llist->mutex);
+
 	if (!node) {
 		goto INSERT_BACK;
 	}
@@ -122,19 +136,21 @@ int llist_enqueue(llist_t * p_llist, void *data)
 	}
 
 	p_llist->count++;
+	pthread_mutex_unlock(&p_llist->mutex);
+
 	ret = 1;
 
- INSERT_BACK:
+INSERT_BACK:
 	return ret;
-}				/* llist_enqueue() */
+} /* llist_enqueue() */
 
-void *llist_dequeue(llist_t * p_llist)
+void *llist_dequeue(llist_t *p_llist)
 {
 	void *ret = llist_pop(p_llist);
 	return ret;
-}				/* llist_dequeue() */
+} /* llist_dequeue() */
 
-int llist_add_before(llist_t * p_llist, void *target, void *data)
+int llist_add_before(llist_t *p_llist, void *target, void *data)
 {
 	int ret = 0;
 	if (!p_llist || !data || p_llist->count == 0) {
@@ -250,22 +266,24 @@ void *llist_extract_back(llist_t * p_llist)
 
 void llist_print(llist_t * p_llist, void (*print_data)(void *))
 {
-	if(!p_llist) {
+	if (!p_llist) {
 		return;
 	}
 
+	pthread_mutex_lock(&p_llist->mutex);
 	node_t *node = p_llist->head;
 	while (node) {
 		print_data(node->data);
 		node = node->next;
 	}
-}				/* llist_print() */
+	pthread_mutex_unlock(&p_llist->mutex);
 
-void *llist_find(llist_t * p_llist,
-		 void *target,
+} /* llist_print() */
+
+void *llist_find(llist_t *p_llist, void *target,
 		 int (*compare_data)(void *initial, void *comparison))
 {
-	if(!p_llist || !target) {
+	if (!p_llist || !target) {
 		return NULL;
 	}
 

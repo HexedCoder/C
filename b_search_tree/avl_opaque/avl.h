@@ -40,7 +40,7 @@ void *tree_search(avl_t *, void *);
 
 void *tree_minimum(avl_t * tree);
 
-void *tree_maximum(avl_t * tree);
+void *tree_maximum(avl_t *tree);
 
 /**
  * @brief Checks size of linked-list
@@ -48,9 +48,10 @@ void *tree_maximum(avl_t * tree);
  * @param p_llist Linked-list to check
  * @return uint64_t Number of elements in linked-list
  */
-int tree_size(avl_t * tree);
+int tree_size(avl_t *tree);
 
-int tree_delete(avl_t ** root, void *val);
+int tree_delete(avl_t **root, void *val);
+int tree_pop(avl_t **root);
 
 /**
  * @brief Function to delete linked-list and free memory
@@ -58,6 +59,6 @@ int tree_delete(avl_t ** root, void *val);
  * @param p_llist Linked-list to delete
  * @param destroy_data Function describing how to delete
  */
-void tree_destroy(avl_t ** p_tree);
+void tree_destroy(avl_t **p_tree);
 
 #endif

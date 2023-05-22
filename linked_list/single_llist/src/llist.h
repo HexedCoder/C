@@ -85,8 +85,7 @@ void llist_print(llist_t * p_llist, void (*print_data)(void *));
  * @param target void* Value to search for with compare_data
  * @param compare_data Function describing how to compare nodes
  */
-void *llist_find(llist_t * p_llist,
-		 void *target,
+void *llist_find(llist_t *p_llist, void *target,
 		 int (*compare_data)(void *initial, void *comparison));
 
 /**
@@ -95,7 +94,7 @@ void *llist_find(llist_t * p_llist,
  * @param p_llist Linked-list to check
  * @return uint64_t Number of elements in linked-list
  */
-uint64_t get_size(llist_t * p_llist);
+uint64_t get_size(llist_t *p_llist);
 
 #endif				/* LLIST_H */
 

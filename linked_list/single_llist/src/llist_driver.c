@@ -1,8 +1,17 @@
+/**
+* @file llist_driver.c
+* @author Jacob Hitchcox
+* @brief
+*
+* COPYRIGHT NOTICE: (c) 2023 Jacob Hitchcox
+*
+*/
+
 #include "llist.h"
+
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
-#include <limits.h>
+#include <pthread.h>
 
 typedef struct node_t node_t;
 
@@ -10,14 +19,8 @@ struct node_t {
 	char value;
 };
 
-void char_destroy(node_t * node)
-{
-	if (!node) {
-		return;
-	}
-
-	free(node);
-}
+#define MAX_NODES 10000
+#define MAX_THREADS 10
 
 struct node_t *node_create(char value)
 {
@@ -30,167 +33,69 @@ struct node_t *node_create(char value)
 	if (node) {
 		node->value = value;
 	}
- PERSON_CREATE_EXIT:
+PERSON_CREATE_EXIT:
 	return node;
 }
 
-void reverse_q(llist_t * queue)
+void *pop_nodes(void *arg)
 {
-	llist_t *stack = llist_create();
-
-	node_t *val;
-
-	while (get_size(queue)) {
-		val = llist_dequeue(queue);
-		printf("%c", val->value);
-		llist_push(stack, val);
-	}
-	while (get_size(stack)) {
-		val = llist_pop(stack);
-		printf("%c", val->value);
-		char_destroy(val);
-	}
-}
-
-void enqueue_dequeue(const char *input)
-{
-	llist_t *queue = llist_create();
-	size_t len = strlen(input);
-	for (int i = 0; i < len; ++i) {
-		if (input[i] >= 65 && input[i] <= 90) {
-			node_t *node = node_create(input[i]);
-			llist_enqueue(queue, node);
+	llist_t *list = (llist_t *)arg;
+	for (int i = 0; i < 1000; ++i) {
+		void *node = llist_dequeue(list);
+		if (node) {
+			free(node);
+			node = NULL;
+		} else {
+			break;
 		}
 	}
-	reverse_q(queue);
-//EXIT_ENQUEUE_DEQUEUE:
-	printf("\n");
-	llist_delete(queue, (void (*)(void *))char_destroy);
-}
-
-void push_pop(const char *input)
-{
-	llist_t *stack = llist_create();
-	size_t len = strlen(input);
-	for (size_t i = 0; i < len; ++i) {
-		if (input[i] == '*') {
-			if (get_size(stack)) {
-				node_t *val = llist_pop(stack);
-				printf("%c", val->value);
-				char_destroy(val);
-			} else {
-				printf("Pop called on empty stack");
-				goto EXIT_PUSH_POP;
-			}
-		} else if (input[i] >= 65 && input[i] <= 90) {
-			node_t *node = node_create(input[i]);
-			llist_push(stack, node);
-		}
-	}
- EXIT_PUSH_POP:
-	printf("\n");
-	llist_delete(stack, (void (*)(void *))char_destroy);
-}
-
-void reverse(const char *input)
-{
-	llist_t *stack = llist_create();
-	size_t len = strlen(input);
-
-	printf("Original: ");
-	for (int i = 0; i < len; ++i) {
-		node_t *node = node_create(input[i]);
-		printf("%c", node->value);
-		llist_push(stack, node);
-	}
-
-	printf("\t\tReverse: ");
-	while (get_size(stack)) {
-		node_t *val = llist_pop(stack);
-		printf("%c", val->value);
-		char_destroy(val);
-	}
-	printf("\n");
-
-	llist_delete(stack, (void (*)(void *))char_destroy);
-}
-
-void double_stack_queue(const char *input)
-{
-	llist_t *stack = llist_create();
-	llist_t *stack2 = llist_create();
-
-	node_t *val = NULL;
-
-	size_t len = strlen(input);
-	for (int i = 0; i < len; ++i) {
-		if (input[i] == '*') {
-			if (!get_size(stack2)) {
-				while (get_size(stack)) {
-					val = llist_pop(stack);
-					llist_push(stack2, val);
-				}
-			}
-
-			val = llist_pop(stack2);
-			printf("%c", val->value);
-			free(val);
-		} else if (input[i] >= 65 && input[i] <= 90) {
-			node_t *node = node_create(input[i]);
-			llist_push(stack, node);
-		}
-	}
-	printf("\n");
-	llist_delete(stack, (void (*)(void *))char_destroy);
-	llist_delete(stack2, (void (*)(void *))char_destroy);
-}
-
-void int_to_bin(int value)
-{
-	for (int i = 31; i >= 0; --i) {
-		printf("%d", (value >> i) & 1);
-	}
-	printf("\n");
-}
-
-void char_print(char value)
-{
-	if (!value) {
-		return;
-	}
-
-	printf("%d ", value);
+	return NULL;
 }
 
 int main(void)
 {
-	const char *input1 = "E A S * Y * Q U E * * * S T * * * I O * N * * *";
-	printf("Ex 1: ");
-	push_pop(input1);
-
-	const char *input2
-	    = "L A * S T I * N * F I R * S T * * O U * T * * * * * *";
-	printf("Ex 2: ");
-	push_pop(input2);
-
-	const char *invalid_input = "* * * * * *";
-	printf("Ex 3: ");
-	push_pop(invalid_input);
-
-	const char *input4 = "E A S * Y * Q U E * * * S T * * * I O * N * * *";
-	printf("Ex 4: ");
-	enqueue_dequeue(input4);
-
-	const char *input7 = "This will be a great day!";
-	printf("Ex 5: ");
-	reverse(input7);
-
-	printf("Ex 6: INT_MAX = \n");
-	for (int i = 0; i < 31; ++i) {
-		int_to_bin(1 << i);
+	llist_t *list = llist_create();
+	if (!list) {
+		perror("queue creation");
+		return -1;
 	}
-	int_to_bin(INT_MAX);
 
-	printf("Ex 7: ");
-	double_stack_queue(input4);
+	char element = 'A'; // random number for each node
+
+	// populate linked list with max nodes
+	for (int i = 0; i < MAX_NODES; ++i) {
+		node_t *new_node = node_create(((element + i) % 26) + i);
+		// TODO: ABC's for new node
+
+		llist_enqueue(list, new_node);
+	}
+	// get size of linked list
+	printf("initial llist size: %ld\n", get_size(list));
+
+	// create array of 10 thread pointers
+	pthread_t threads[MAX_THREADS];
+	for (int i = 0; i < MAX_THREADS; ++i) {
+		pthread_create(&threads[i], NULL, pop_nodes, list);
+	}
+
+	// wait for threads to finish
+	for (int i = 0; i < MAX_THREADS; ++i) {
+		pthread_join(threads[i], NULL);
+	}
+
+	printf("(after threads) llist size: %ld\n", get_size(list));
+
+	// free memory
+	llist_delete(list, NULL);
+
+	return 0;
 }
+
+// notes:
+// create 10,000 ll nodes
+// have 'thead' function to pop off 1000 nodes
+// for each ten, create thread, with thread_pop function
+// for each ten join thread
+// display size of linked list
+
+/*** end of file ***/

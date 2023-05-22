@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <pthread.h>
 
 #include "avl.h"
 #include "llist.h"
@@ -16,6 +17,7 @@ struct avl_t {
 	struct node_t *root;
 	compare compare_func;
 	action action_func;
+	pthread_mutex_t mutex;
 };
 
 static node_t *create_node(void *data);
@@ -184,6 +186,7 @@ void *avl_insert(avl_t * tree, void *data)
 		return NULL;
 	}
 
+	pthread_mutex_lock(&tree->mutex);
 	node_t *new_node = NULL;
 	if (!tree->root) {
 		new_node = calloc(1, sizeof(*new_node));
@@ -211,6 +214,7 @@ void *avl_insert(avl_t * tree, void *data)
 
 	// no balance needed
 	if (!new_node->parent && bf < 2) {
+		pthread_mutex_unlock(&tree->mutex);
 		return data;
 	}
 
@@ -246,6 +250,7 @@ void *avl_insert(avl_t * tree, void *data)
 			}
 		}
 	}
+	pthread_mutex_unlock(&tree->mutex);
 
 	return data;
 }
@@ -443,12 +448,13 @@ static int delete_node(node_t ** root, node_t ** target, compare compare_func)
 
 	node_t *node = *target;
 
-	printf("Removing %d\n", *(int *)node->data);
+	//	printf("Removing %d\n", *(int *)node->data);
 
 	// Handle root node
 
 	if (*root == *target) {
 		if (!node->left && !node->right) {
+			free(node->data);
 			free(*root);
 			*root = NULL;
 			return 1;
@@ -456,8 +462,9 @@ static int delete_node(node_t ** root, node_t ** target, compare compare_func)
 
 		if (!node->left || !node->right) {
 			node_t *temp = node->left ? node->left : node->right;
-			printf("Temp Node: %s\n", (char *)temp->data);	// How to print data
+			//			printf("Temp Node: %s\n", (char *)temp->data);	// How to print data
 			temp->parent = NULL;
+			free(node->data);
 			free(*target);
 			*root = temp;
 			return 1;
@@ -478,6 +485,7 @@ static int delete_node(node_t ** root, node_t ** target, compare compare_func)
 		if (node->left) {
 			node->left->parent = node->parent;
 		}
+		free(node->data);
 		free(node);
 		return 1;
 	}
@@ -499,7 +507,7 @@ static int delete_node(node_t ** root, node_t ** target, compare compare_func)
 			min->right->parent = min->parent;
 		}
 	}
-
+	free(min->data);
 	free(min);
 	return 1;
 }
@@ -511,23 +519,50 @@ int tree_delete(avl_t ** root, void *val)
 	if (!ptr || !ptr->compare_func) {
 		return 0;
 	}
+
 	node_t *search_node = tree_search(*root, val);
 
 	if (!search_node) {
 		printf("Search Value Not Found\n");
 		return 0;
 	}
-	return delete_node(&ptr->root, &search_node, ptr->compare_func);
+
+	pthread_mutex_lock(&ptr->mutex);
+	int ret = delete_node(&ptr->root, &search_node, ptr->compare_func);
+	pthread_mutex_unlock(&ptr->mutex);
+
+	return ret;
 }
 
-static void delete(node_t ** node)
+int tree_pop(avl_t **root)
+{
+	avl_t *ptr = *root;
+
+	if (!ptr) {
+		return 0;
+	}
+
+	pthread_mutex_lock(&ptr->mutex);
+	node_t *search_node = ptr->root;
+
+	if (!search_node) {
+		return 0;
+	}
+
+	int ret = delete_node(&ptr->root, &search_node, ptr->compare_func);
+	pthread_mutex_unlock(&ptr->mutex);
+
+	return ret;
+}
+
+static void delete(node_t **node)
 {
 	if (!node || !*node) {
 		return;
 	}
 
-	delete(&(*node)->left);
-	delete(&(*node)->right);
+	delete (&(*node)->left);
+	delete (&(*node)->right);
 	free(*node);
 	*node = NULL;
 }
