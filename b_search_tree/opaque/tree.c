@@ -1,9 +1,10 @@
+#include "llist.h"
+#include "tree.h"
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdint-gcc.h>
-
-#include "tree.h"
-#include "llist.h"
+#include <pthread.h>
 
 typedef struct node_t {
 	struct node_t *parent;
@@ -16,6 +17,7 @@ struct tree {
 	struct node_t *root;
 	compare compare_func;
 	action action_func;
+	pthread_mutex_t mutex;
 };
 
 int num_people = 0;
@@ -72,6 +74,7 @@ int tree_insert(tree * tree, void *data)
 		goto INSERT_EXIT;
 	}
 
+	pthread_mutex_lock(&tree->mutex);
 	if (!tree->root) {
 		node_t *new_node = create_node(data);
 
@@ -117,6 +120,7 @@ int tree_insert(tree * tree, void *data)
 			break;
 		}
 	}
+	pthread_mutex_unlock(&tree->mutex);
 
 	ret = 1;
 

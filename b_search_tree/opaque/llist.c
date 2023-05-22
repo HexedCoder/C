@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <pthread.h>
 
 #include "llist.h"
 
@@ -11,6 +12,7 @@ struct llist_t {
 	node_t *head;
 	node_t *tail;
 	uint64_t count;
+	pthread_mutex_t mutex;
 };
 
 static node_t *create_node(void *data);
@@ -34,7 +36,7 @@ static node_t *create_node(void *data)
 
 void llist_delete(llist_t * p_llist, void (*destroy_data)(void *))
 {
-	if(!p_llist) {
+	if (!p_llist) {
 		return;
 	}
 
@@ -57,6 +59,8 @@ int llist_push(llist_t * p_llist, void *data)
 	}
 
 	node_t *node = create_node(data);
+	pthread_mutex_lock(&p_llist->mutex);
+
 	if (!node) {
 		goto INSERT_FRONT;
 	}
@@ -71,6 +75,8 @@ int llist_push(llist_t * p_llist, void *data)
 	}
 
 	p_llist->count++;
+	pthread_mutex_unlock(&p_llist->mutex);
+
 	ret = 1;
 
  INSERT_FRONT:
@@ -80,6 +86,8 @@ int llist_push(llist_t * p_llist, void *data)
 void *llist_pop(llist_t * p_llist)
 {
 	void *ret = NULL;
+
+	pthread_mutex_lock(&p_llist->mutex);
 	if (!p_llist->head) {
 		goto EXTRACT_FRONT;
 	}
@@ -96,6 +104,7 @@ void *llist_pop(llist_t * p_llist)
 	free(curr);
 
 	p_llist->count--;
+	pthread_mutex_unlock(&p_llist->mutex);
 
  EXTRACT_FRONT:
 	return ret;
@@ -109,6 +118,8 @@ int llist_enqueue(llist_t * p_llist, void *data)
 	}
 
 	node_t *node = create_node(data);
+	pthread_mutex_lock(&p_llist->mutex);
+
 	if (!node) {
 		goto INSERT_BACK;
 	}
@@ -122,6 +133,8 @@ int llist_enqueue(llist_t * p_llist, void *data)
 	}
 
 	p_llist->count++;
+	pthread_mutex_unlock(&p_llist->mutex);
+
 	ret = 1;
 
  INSERT_BACK:
@@ -220,6 +233,7 @@ void *llist_extract_back(llist_t * p_llist)
 		p_llist->tail = NULL;
 
 		free(curr);
+		p_llist->count--;
 		goto EXTRACT_BACK;
 	}
 
@@ -253,15 +267,17 @@ void llist_print(llist_t * p_llist, void (*print_data)(void *))
 		return;
 	}
 
+	pthread_mutex_lock(&p_llist->mutex);
 	node_t *node = p_llist->head;
 	while (node) {
 		print_data(node->data);
 		node = node->next;
 	}
+	pthread_mutex_unlock(&p_llist->mutex);
+
 }				/* llist_print() */
 
-void *llist_find(llist_t * p_llist,
-		 void *target,
+void *llist_find(llist_t * p_llist, void *target,
 		 int (*compare_data)(void *initial, void *comparison))
 {
 	if(!p_llist || !target) {
