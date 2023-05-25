@@ -3,68 +3,67 @@
 
 #include "colors.h"
 
-int main(void) {
+int main(void)
+{
+	printf("Hello World\n");
 
-    printf("Hello World\n");
-    
-    change_color(red);
-    printf("Hello World\n");
-    
-    change_color(green);
-    printf("Hello World\n");
-    
-    change_color(blue);
-    printf("Hello World\n");
-    
-    change_color(cyan);
-    printf("Hello World\n");
-    
-    change_color(yellow);
-    printf("Hello World\n");
+	change_color(COLOR_RED);
+	printf("Hello World\n");
 
-    change_color(magenta);
-    printf("Hello World\n");
+	change_color(COLOR_GREEN);
+	printf("Hello World\n");
 
-    change_color(white);
-    printf("Hello World\n");
+	change_color(COLOR_BLUE);
+	printf("Hello World\n");
 
-    change_color(black);
-    printf("Hello World\n");
+	change_color(COLOR_CYAN);
+	printf("Hello World\n");
 
-    change_color(gray);
-    printf("Hello World\n");
+	change_color(COLOR_YELLOW);
+	printf("Hello World\n");
 
-    change_color(brightRed);
-    printf("Hello World\n");
+	change_color(COLOR_MAGENTA);
+	printf("Hello World\n");
 
-    change_color(brightBlue);
-    printf("Hello World\n");
+	change_color(COLOR_WHITE);
+	printf("Hello World\n");
 
-    change_color(brightGreen);
-    printf("Hello World\n");
+	change_color(COLOR_BLACK);
+	printf("Hello World\n");
 
-    change_color(brightYellow);
-    printf("Hello World\n");
+	change_color(COLOR_GRAY);
+	printf("Hello World\n");
 
-    change_color(brightMagenta);
-    printf("Hello World\n");
+	change_color(COLOR_BRIGHT_RED);
+	printf("Hello World\n");
 
-    change_color(brightCyan);
-    printf("Hello World\n");
+	change_color(COLOR_BRIGHT_BLUE);
+	printf("Hello World\n");
 
-    change_color(brightWhite);
-    printf("Hello World\n");
+	change_color(COLOR_BRIGHT_GREEN);
+	printf("Hello World\n");
 
-    reset_color();
+	change_color(COLOR_BRIGHT_YELLOW);
+	printf("Hello World\n");
 
-    change_font(bold);
+	change_color(COLOR_BRIGHT_MAGENTA);
+	printf("Hello World\n");
 
-    printf("\nHello World\n");
+	change_color(COLOR_BRIGHT_CYAN);
+	printf("Hello World\n");
 
-    reset_color();
+	change_color(COLOR_BRIGHT_WHITE);
+	printf("Hello World\n");
 
-    printf("Hello World\n");
+	reset_color();
 
-    
-    return 0;
+	change_font(FONT_BOLD);
+
+	printf("\nHello World\n");
+
+	reset_color();
+
+	printf("Hello World\n");
+
+	return 0;
 }
