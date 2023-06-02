@@ -70,6 +70,11 @@ tpool_t *tpool_create(int num_workers)
 
 	tpool->num_workers = num_workers;
 	tpool->workers = malloc(sizeof(pthread_t) * num_workers);
+	if (!tpool->workers) {
+		free(tpool);
+		return NULL;
+	}
+
 	tpool->task_queue = NULL;
 	pthread_mutex_init(&tpool->queue_mutex, NULL);
 	pthread_cond_init(&tpool->queue_condition, NULL);
@@ -98,7 +103,7 @@ void tpool_enqueue(tpool_t * tpool, task_func_t task, void *arg)
 	new_task->argument = arg;
 	new_task->next = NULL;
 
-	// lock  mutex
+	// lock mutex
 	pthread_mutex_lock(&tpool->queue_mutex);
 
 	// add new task
@@ -123,6 +128,10 @@ void tpool_enqueue(tpool_t * tpool, task_func_t task, void *arg)
 
 void tpool_shutdown(tpool_t ** tpool_ptr)
 {
+	if (!tpool_ptr || !*tpool_ptr) {
+		return;
+	}
+
 	tpool_t *tpool = *tpool_ptr;
 	// lock mutex
 	pthread_mutex_lock(&tpool->queue_mutex);
