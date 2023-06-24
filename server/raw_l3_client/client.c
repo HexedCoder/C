@@ -100,7 +100,7 @@ int main(int argc, char *argv[])
 		goto EARLY_EXIT;
 	}
 
-	char packet_buffer[PKT_LEN] = { 0 };
+	unsigned char packet_buffer[PKT_LEN] = { 0 };
 
 	// create struct from buffer sections
 	struct iphdr *ip = (struct iphdr *)packet_buffer;
