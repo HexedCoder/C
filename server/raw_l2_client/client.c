@@ -182,18 +182,16 @@ int main(int argc, char *argv[])
 	sa.sll_ifindex = ifindex;
 	sa.sll_protocol = htons(ETH_P_ALL);
 
+	size_t total_len =
+	    sizeof(struct ether_header) + sizeof(struct iphdr) +
+	    sizeof(struct udphdr);
+
 	// view crafted packet
-	for (size_t i = 0;
-	     i <
-	     sizeof(struct ether_header) + sizeof(struct iphdr) +
-	     sizeof(struct udphdr); i++) {
+	for (size_t i = 0; i < total_len; i++) {
 		printf("%02X ", packet_buff[i]);
 	}
 	puts("");
 
-	size_t total_len =
-	    sizeof(struct ether_header) + sizeof(struct iphdr) +
-	    sizeof(struct udphdr);
 	if (sendto
 	    (raw_socket, packet_buff, total_len, 0, (struct sockaddr *)&sa,
 	     sizeof(struct sockaddr_ll)) < 0) {
