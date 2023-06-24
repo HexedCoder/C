@@ -51,8 +51,15 @@ uint16_t get_checksum(uint8_t * buf, uint16_t size)
 	}
 
 	return (uint16_t) (~sum);
-}
+}				/* get_checksum() */
 
+/**
+ * @brief Validates a port number represented as a string
+ *
+ * @param port The port number string to validate.
+ *
+ * @return long port on success, otherwise returns -1.
+ */
 long validate_port(const char *port)
 {
 	if (!port) {
@@ -66,7 +73,7 @@ long validate_port(const char *port)
 	}
 
 	return res;
-}
+}				/* validate_port() */
 
 int main(int argc, char *argv[])
 {
@@ -84,11 +91,9 @@ int main(int argc, char *argv[])
 	u_int32_t src_addr = inet_addr(argv[1]);
 	u_int32_t dst_addr = inet_addr(argv[3]);
 
-	u_int16_t src_port, dst_port;
-
 	// populate src and dst ports
-	src_port = validate_port(argv[2]);
-	dst_port = validate_port(argv[4]);
+	u_int16_t src_port = validate_port(argv[2]);
+	u_int16_t dst_port = validate_port(argv[4]);
 
 	if (!src_port || !dst_port) {
 		fprintf(stderr, "Invalid %s port\n", !src_port ? "src" : "dst");
@@ -143,9 +148,9 @@ int main(int argc, char *argv[])
 	ip->check = get_checksum((uint8_t *) ip, sizeof(struct iphdr));
 
 	// UDP Header
+	udp->source = htons(src_port);
 	udp->dest = htons(dst_port);
 	udp->len = htons(sizeof(struct udphdr));
-	udp->source = htons(src_port);
 
 	if (sendto
 	    (raw_socket, packet_buffer, ip->tot_len, 0, results->ai_addr,
