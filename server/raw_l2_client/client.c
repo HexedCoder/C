@@ -106,14 +106,14 @@ int main(int argc, char *argv[])
 		goto EARLY_EXIT;
 	}
 
-	unsigned char packet_buff[PKT_LEN] = { 0 };
+	unsigned char packet_buffer[PKT_LEN] = { 0 };
 
 	// create struct from buffer sections
-	struct ether_header *eth = (struct ether_header *)packet_buff;
+	struct ether_header *eth = (struct ether_header *)packet_buffer;
 	struct iphdr *ip =
-	    (struct iphdr *)(packet_buff + sizeof(struct ether_header));
+	    (struct iphdr *)(packet_buffer + sizeof(struct ether_header));
 	struct udphdr *udp =
-	    (struct udphdr *)(packet_buff + sizeof(struct ether_header) +
+	    (struct udphdr *)(packet_buffer + sizeof(struct ether_header) +
 			      sizeof(struct iphdr));
 
 	// Convert source and dest MAC addresses from string to binary
@@ -188,12 +188,12 @@ int main(int argc, char *argv[])
 
 	// view crafted packet
 	for (size_t i = 0; i < total_len; i++) {
-		printf("%02X ", packet_buff[i]);
+		printf("%02X ", packet_buffer[i]);
 	}
 	puts("");
 
 	if (sendto
-	    (raw_socket, packet_buff, total_len, 0, (struct sockaddr *)&sa,
+	    (raw_socket, packet_buffer, total_len, 0, (struct sockaddr *)&sa,
 	     sizeof(struct sockaddr_ll)) < 0) {
 		perror("Unable to send");
 		goto CLOSE_SOCKET;

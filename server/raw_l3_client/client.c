@@ -152,7 +152,14 @@ int main(int argc, char *argv[])
 	udp->dest = htons(dst_port);
 	udp->len = htons(sizeof(struct udphdr));
 
-	if (sendto
+    // view crafted packet
+    for (size_t i = 0; i < ip->tot_len; i++) {
+        printf("%02X ", packet_buffer[i]);
+    }
+    puts("");
+
+
+    if (sendto
 	    (raw_socket, packet_buffer, ip->tot_len, 0, results->ai_addr,
 	     results->ai_addrlen) < 0) {
 		perror("Unable to send");
