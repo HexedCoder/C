@@ -28,7 +28,7 @@ TST_LIBS := -lcheck -lm -pthread -lrt -lsubunit
 all: $(BIN)
 
 run: clean $(BIN)
-	sudo ./raw_client 0.0.0.0 23232 localhost 5000
+	sudo ./raw_client 0.0.0.0 23232 127.0.0.1 5000
 
 debug: CFLAGS += -g3 -D DDEBUG
 debug: $(BIN)
