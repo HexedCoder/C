@@ -107,8 +107,8 @@ int main(int argc, char *argv[])
 	memcpy(packet_buffer, &num, 6);
 
 	// Convert Interface name to MAX address
-	char *mac_res = get_mac_address(argv[1], mac_address);
-	const char *interface = "enp0s31f6";
+	const char *interface = argv[1];
+	char *mac_res = get_mac_address(interface, mac_address);
 
 	if (!mac_res) {
 		fprintf(stderr, "No MAC Address found for %s\n", argv[1]);
