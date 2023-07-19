@@ -16,6 +16,12 @@ struct llist_t {
 };
 
 static node_t *create_node(void *data);
+/**
+ * @brief Create a new node with the given data.
+ *
+ * @param data The data to be stored in the node.
+ * @return A pointer to the newly created node, or NULL if memory allocation fails.
+ */
 
 llist_t *llist_create()
 {
