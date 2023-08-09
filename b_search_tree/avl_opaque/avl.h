@@ -1,5 +1,13 @@
-#ifndef BINARY_SEARCH_TREE_H
-#define BINARY_SEARCH_TREE_H
+/** @file avl.h
+ *
+ * @brief This module serves as the template for functions in avl.c
+ *
+ * @par
+ * COPYRIGHT NOTICE: (c) 2023 Jacob Hitchcox
+ */
+
+#ifndef AVL_H
+#define AVL_H
 
 typedef struct avl_t avl_t;
 
@@ -10,102 +18,57 @@ typedef int (*compare)(void *, void *);
 typedef void (*destroy)(void *);
 
 // Defines the user's action function
-typedef void (*action)(void *);
+typedef void (*action)(void *, void *);
 
 /**
  * Allocates memory for an avl_t tree.
  *
- * @param compare_func Pointer to the comparison function.
- * @param action_func Pointer to the action function.
+ * @param compare: Pointer to the comparison function.
+ * @param action: Pointer to the action function.
+ *
  * @return Pointer to the allocated avl_t tree on success, NULL on failure.
  */
-avl_t *tree_create(compare compare_func, action action_func);
+avl_t *avl_tree_create(compare, action);
 
 /**
- * Prints the AVL tree in a visual format.
+ * Adds data of type void* to the AVL tree.
  *
- * @param p_root Pointer to the p_root of the AVL tree.
- */
-void print_visual(avl_t *p_root);
-
-/**
- * Performs the preorder action (provided on tree creation) on the tree.
+ * @param avl_t *: Pointer to the root of the AVL tree.
+ * @param void *: Pointer to the data being added to the tree.
  *
- * @param p_tree Pointer to the p_tree of the AVL tree.
- */
-void preorder(avl_t *p_tree);
-
-/**
- * Performs the postorder action (provided on tree creation) on the tree.
- *
- * @param p_tree Pointer to the p_tree of the AVL tree.
- */
-void postorder(avl_t *p_tree);
-
-/**
- * Performs the inorder action (provided on tree creation) on the tree.
- *
- * @param p_tree Pointer to the p_tree of the AVL tree.
- */
-void inorder(avl_t *p_tree);
-
-/**
- * Performs the level order action (provided on tree creation) on the tree.
- *
- * @param p_tree Pointer to the p_tree of the AVL tree.
- */
-void level_order(avl_t *p_tree);
-
-/**
- * Adds p_data of type void* to the AVL tree.
- *
- * @param p_tree Pointer to the p_tree of the AVL tree.
- * @param p_data Pointer to the p_data being added to the tree.
  * @return Pointer to the inserted node on success, NULL on failure.
  */
-void *avl_insert(avl_t *p_tree, void *p_data);
+void *avl_insert(avl_t *, void *);
 
 /**
- * Searches for p_value of type void* in the AVL tree.
+ * Searches for data of type void* in the AVL tree.
  *
- * @param p_tree Pointer to the p_tree of the AVL tree.
- * @param p_value Pointer to the p_value being searched for.
- * @return Pointer to the node containing the p_value on success, NULL on
- * failure.
- */
-void *tree_search(avl_t *p_tree, void *p_value);
-
-/**
- * Returns the minimum node in the AVL p_tree.
+ * @param avl_t *: Pointer to the root of the AVL tree.
+ * @param void *: Pointer to the data being searched for.
  *
- * @param p_tree Pointer to the AVL p_tree.
- * @return Pointer to the minimum node on success, NULL on failure.
+ * @return Pointer to the node containing the data on success, NULL on failure.
  */
-void *tree_minimum(avl_t *p_tree);
-
-/**
- * Returns the maximum node in the AVL p_tree.
- *
- * @param p_tree Pointer to the AVL p_tree.
- * @return Pointer to the maximum node on success, NULL on failure.
- */
-void *tree_maximum(avl_t *p_tree);
-
-/**
- * Returns the number of elements in the AVL p_tree.
- *
- * @param p_tree Pointer to the AVL p_tree.
- * @return Number of elements in the AVL p_tree.
- */
-int tree_size(avl_t *p_tree);
+void *avl_tree_search(avl_t *, void *);
 
 /**
  * Deletes the avl_t tree and frees the associated memory.
  *
- * @param pp_tree Pointer to the pointer of the AVL tree to be deleted.
+ * @param avl_t **: Pointer to the pointer of the AVL tree to be deleted.
+ * @param destroy: Pointer to the destroy function.
  */
-void tree_destroy(avl_t **pp_tree);
+void avl_tree_destroy(avl_t **, destroy);
 
-int tree_delete(avl_t **pp_root, void *p_data);
+/**
+ * Returns the number of elements in the AVL tree.
+ *
+ * @param avl_t *: Pointer to the AVL tree.
+ *
+ * @return Number of elements in the AVL tree, or 0 on failure.
+ */
+int avl_tree_size(avl_t *);
 
-#endif
+int avl_node_delete(avl_t **root, void *val, destroy);
+
+#endif /* AVL_H */
+
+/* end of file */
